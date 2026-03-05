@@ -1,0 +1,370 @@
+{
+  "name": "Lemon Consultoria - AccessToken",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "{{WEBHOOK_PATH}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -304,
+        -912
+      ],
+      "id": "80155006-640d-47d4-9712-6efc5ac86136",
+      "name": "Webhook",
+      "webhookId": "{{WEBHOOK_ID}}"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://auth.contaazul.com/oauth2/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Basic {{CONTAAZUL_BASIC_AUTH_BASE64}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "authorization_code"
+            },
+            {
+              "name": "code",
+              "value": "={{ $json.query.code }}"
+            },
+            {
+              "name": "redirect_uri",
+              "value": "{{N8N_WEBHOOK_BASE_URL}}/webhook/{{WEBHOOK_PATH}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -96,
+        -912
+      ],
+      "name": "Troca Code por Token ContaAzul",
+      "id": "c4856172-f945-4aed-b84d-dab567916f2f"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "value": "{{DATATABLE_ID}}",
+          "mode": "list",
+          "cachedResultName": "Lemon Consultoria Tokens ContaAzul",
+          "cachedResultUrl": "/projects/{{PROJECT_ID}}/datatables/{{DATATABLE_ID}}"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "RefreshToken",
+              "condition": "isNotEmpty"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "RefreshToken": "={{ $json.refresh_token }}",
+            "AccessToken": "={{ $json.access_token }}"
+          },
+          "matchingColumns": [
+            "RefreshToken"
+          ],
+          "schema": [
+            {
+              "id": "RefreshToken",
+              "displayName": "RefreshToken",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "AccessToken",
+              "displayName": "AccessToken",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        112,
+        -912
+      ],
+      "id": "536bf3dd-f730-4f16-aff7-10fd6c6d53eb",
+      "name": "Upsert row(s)"
+    },
+    {
+      "parameters": {
+        "content": "Pega Refresh Token e Acess Token -> Registra ambos na tabela ",
+        "height": 288,
+        "width": 672
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        -1008
+      ],
+      "id": "cb762fb0-68ae-4cee-9c95-6b52838068f2",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -304,
+        -608
+      ],
+      "id": "a6453491-5611-4e8e-aa3b-45db91081337",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://auth.contaazul.com/oauth2/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Basic {{CONTAAZUL_BASIC_AUTH_BASE64}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "refresh_token"
+            },
+            {
+              "name": "refresh_token",
+              "value": "={{ $json.RefreshToken }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        128,
+        -608
+      ],
+      "name": "Renova Token ContaAzul1",
+      "id": "8af83f20-be63-494a-838b-3983ebd08664"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "{{DATATABLE_ID}}",
+          "mode": "list",
+          "cachedResultName": "Lemon Consultoria Tokens ContaAzul",
+          "cachedResultUrl": "/projects/{{PROJECT_ID}}/datatables/{{DATATABLE_ID}}"
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -96,
+        -608
+      ],
+      "id": "b91cc800-8c3d-4e14-9bba-493f1b8157e7",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "{{DATATABLE_ID}}",
+          "mode": "list",
+          "cachedResultName": "Lemon Consultoria Tokens ContaAzul",
+          "cachedResultUrl": "/projects/{{PROJECT_ID}}/datatables/{{DATATABLE_ID}}"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "AccessToken",
+              "condition": "isNotEmpty"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "RefreshToken": "={{ $json.refresh_token }}",
+            "AccessToken": "={{ $json.access_token }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "RefreshToken",
+              "displayName": "RefreshToken",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "AccessToken",
+              "displayName": "AccessToken",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        336,
+        -608
+      ],
+      "id": "f6ae793f-6c86-47e6-9660-f6695be80518",
+      "name": "Update row(s)"
+    },
+    {
+      "parameters": {
+        "content": "Aciona de uma em uma hora -> Pega Refresh Token ->Envia o Refresh para pegar o novo Access -> Registra o novo access na tabela",
+        "height": 288,
+        "width": 912
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        -704
+      ],
+      "id": "404a9387-c9fb-4113-aafc-374ace382318",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Troca Code por Token ContaAzul",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Troca Code por Token ContaAzul": {
+      "main": [
+        [
+          {
+            "node": "Upsert row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Renova Token ContaAzul1": {
+      "main": [
+        [
+          {
+            "node": "Update row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Renova Token ContaAzul1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "{{VERSION_ID}}",
+  "meta": {
+    "instanceId": "{{INSTANCE_ID}}"
+  },
+  "id": "{{WORKFLOW_ID}}",
+  "tags": []
+}
