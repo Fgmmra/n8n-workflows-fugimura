@@ -1,0 +1,202 @@
+{
+  "name": "CFO digital - envio de texto",
+  "nodes": [
+    {
+      "parameters": {
+        "amount": 1.5
+      },
+      "id": "bd273b5a-8806-4cb0-a578-fa8e8363e6cd",
+      "name": "waitSeconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        944,
+        -32
+      ],
+      "webhookId": "{{WEBHOOK_ID}}"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "0ce02843-7e30-46b6-9f08-7d51b9309e1b",
+      "name": "contentLoop",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        496,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "message",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "id": "05b5f042-6eef-47c8-a114-3cc2ecf1a7af",
+      "name": "contentSplit",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        256,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "928f8c88-2bb4-40c3-8bd1-890d248b9365",
+              "name": "message",
+              "value": "={{ $json.message.split('\\n\\n').map(item => item.replace(/\\[|\\]/g, '').trim()) }}",
+              "type": "array"
+            },
+            {
+              "id": "3196df60-b877-49a2-ab00-7437138cca28",
+              "name": "recipient",
+              "value": "={{ $json.phoneNumber }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        -96
+      ],
+      "id": "333f2ad6-e784-4a79-971e-73f9cf3f1c74",
+      "name": "variaveisAmbiente"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "phoneNumber"
+            },
+            {
+              "name": "message"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -176,
+        -96
+      ],
+      "id": "ec3c2a8a-f944-46be-85c7-d06ae8b96bb1",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "number": "={{ $json.recipient }}",
+        "text": "={{ $json.message.replace(/\\[NIN]/g, '').split('\\n\\n').join('\\n') }}"
+      },
+      "type": "n8n-nodes-uazapi.uazApi",
+      "typeVersion": 1,
+      "position": [
+        752,
+        -32
+      ],
+      "id": "8e098e10-8a35-4b82-a31a-3a24ca4a49ee",
+      "name": "Send text message",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "uazApiApi": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "UazAPI Fugimura account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "waitSeconds": {
+      "main": [
+        [
+          {
+            "node": "contentLoop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "contentLoop": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "contentSplit": {
+      "main": [
+        [
+          {
+            "node": "contentLoop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "variaveisAmbiente": {
+      "main": [
+        [
+          {
+            "node": "contentSplit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "variaveisAmbiente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send text message": {
+      "main": [
+        [
+          {
+            "node": "waitSeconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "{{VERSION_ID}}",
+  "meta": {
+    "instanceId": "{{INSTANCE_ID}}"
+  },
+  "id": "{{WORKFLOW_ID}}",
+  "tags": []
+}
