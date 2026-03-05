@@ -1,0 +1,200 @@
+{
+  "name": "CFO Digital - Agente de calculos",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "userMessage"
+            },
+            {
+              "name": "userNumber"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -672,
+        -16
+      ],
+      "id": "42e8ef44-93eb-4923-bf9a-d2abeb33df13",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "204866df-7eff-4720-a2d9-f4d84ff2260b",
+              "name": "output",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        -16
+      ],
+      "id": "4a9bdf5c-0ccc-49ed-849e-9405e563d959",
+      "name": "catchOutput"
+    },
+    {
+      "parameters": {
+        "number": "={{ $json.userNumber }}",
+        "text": "=Um minuto, estou fazendo a consulta e já te retorno!"
+      },
+      "type": "n8n-nodes-uazapi.uazApi",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        -16
+      ],
+      "id": "bc24edd7-82f7-4148-b7a2-aa25c83dcbbc",
+      "name": "Send text message",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "uazApiApi": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "UazAPI Fugimura account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "{{GOOGLE_SHEETS_URL}}",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "{{SHEET_ID}}",
+          "mode": "list",
+          "cachedResultName": "Big Data Financeiro",
+          "cachedResultUrl": "{{GOOGLE_SHEETS_URL}}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        0,
+        176
+      ],
+      "id": "b1caf3c9-164d-4379-84af-13488dc2551c",
+      "name": "dadosFinanceiros",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Sheets Darkay"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3-flash-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $('When Executed by Another Workflow').item.json.userMessage }}"
+            },
+            {
+              "content": "=<INSTRUCAO_CRITICA>\n\n1.\nRigor Matemático: Toda soma, média ou variação percentual deve ser conferida. Se o Lucro Líquido não for igual a (EBITDA - Depreciação - Juros - Impostos), aponte a inconsistência.\n\n2.\nContexto Temporal: Sempre compare o dado atual com o mês anterior (MoM) ou o mesmo mês do ano anterior (YoY) para dar sentido ao número.\n\n3.\nSegmentação Obrigatória: Nunca forneça um dado consolidado se a dúvida permitir detalhamento por Unidade de Negócio ou Categoria.\n\n4.\nProibição de Alucinação: Se a coluna \"Nível de Estoque\" estiver zerada para \"Serviços\", explique que é devido à natureza do produto, não invente um valor.\n\n<Regras_de_Assertividade>\n\n•\nValidação de Sinais: Despesas e Impostos devem ser tratados como valores negativos em cálculos de soma, mesmo que na planilha apareçam como positivos (verificar cabeçalho).\n\n•\nArredondamento: Use sempre duas casas decimais para valores monetários e uma casa decimal para porcentagens.\n\n•\nHierarquia de Dados:\n\n1.\nDados Reais (2016-2024) têm prioridade de fato.\n\n2.\nDados Projetados (2025) devem ser acompanhados do termo \"Estimativa baseada em tendência\".\n\n\n\n<Mapeamento_de_Analises_Reais>\n\n1. Análise de Variância (Budget vs Actual)\n\n•\nAção: Comparar o realizado de 2024 com a projeção de 2025 para identificar desvios de rota.\n\n•\nIndicador Chave: % de Crescimento da Receita Líquida vs % de Crescimento do EBITDA.\n\n2. Eficiência Operacional (Margem de Contribuição)\n\n•\nAção: Analisar a relação entre Receita Líquida e CPV por Categoria.\n\n•\nInsight: Identificar qual categoria (Premium vs Standard) traz mais retorno sobre o capital investido.\n\n3. Ciclo Financeiro e Liquidez\n\n•\nAção: Cruzar \"Saldo em Caixa\" com \"Despesas Operacionais\".\n\n•\nMétrica: \"Cash Runway\" (Quantos meses o caixa atual cobre as despesas fixas).\n\n<Exemplos_Reais_de_Analise>\n\nExemplo 1: Queda de Margem\n\nInput: \"Por que o lucro da Unidade Sul caiu em Julho/2023?\"\nResposta Esperada:\n\n\nAnálise de Causa Raiz - Unidade Sul (Jul/2023)•\nFato: O Lucro Líquido caiu 12% MoM, apesar da Receita Bruta ter subido 3%.\n\n•\nDiagnóstico: O CPV (Custo de Produtos Vendidos) subiu de 45% para 52% da Receita Líquida.\n\n•\nImpacto: A Margem EBITDA foi comprimida em 700 bps (pontos-base).\n\n•\nConclusão: O aumento no custo de aquisição da Categoria 'Premium' anulou o ganho de volume de vendas.\nPróximo Passo: Renegociar contratos com fornecedores da categoria Premium ou ajustar a tabela de preços para Agosto.\n\n\n\nExemplo 2: Análise de Sazonalidade\n\nInput: \"Qual a projeção para o E-commerce no final de 2025?\"\nResposta Esperada:\n\n\nProjeção Estratégica - E-commerce (Q4 2025)•\nReceita Estimada (Dez/25): R$ XXX.XXX,XX (Baseado em crescimento orgânico de 12% YoY).\n\n•\nSazonalidade: Historicamente, o mês de Dezembro representa 18% do faturamento anual desta unidade.\n\n•\nRisco: O Nível de Estoque projetado está 5% abaixo da média histórica para períodos de pico.\nPróximo Passo: Antecipar a compra de suprimentos em Outubro para evitar ruptura de estoque no Natal.\n\n\n\n<Processo_de_Resposta_Padronizado>\n\n1.\nResumo Executivo: Uma frase curta com o principal achado.\n\n2.\nTabela de Evidências: Mini-tabela com os números extraídos da planilha.\n\n3.\nInterpretação: O \"porquê\" por trás dos números.\n\n4.\nCTA (Call to Action): Uma recomendação prática baseada no dado.\n\n<Fallback_Mensagens>\n\n•\n\"A coluna [Nome da Coluna] não possui dados preenchidos para o filtro selecionado.\"\n\n•\n\"Não é possível calcular a variação YoY pois a base de dados inicia em 2016.\"",
+              "role": "model"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -272,
+        -16
+      ],
+      "id": "12441550-7642-4e50-986e-ba9d86f69e20",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Darkay Gemini"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Send text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send text message": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dadosFinanceiros": {
+      "ai_tool": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "catchOutput",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "{{VERSION_ID}}",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "{{INSTANCE_ID}}"
+  },
+  "id": "{{WORKFLOW_ID}}",
+  "tags": []
+}
