@@ -1,0 +1,1179 @@
+{
+  "name": "Lemon Consultoria - Busca Dados",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -528,
+        336
+      ],
+      "id": "126465a0-c018-44b1-aa5b-0a1b5d65a61f",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "{{DATATABLE_ID}}",
+          "mode": "list",
+          "cachedResultName": "Lemon Consultoria Tokens ContaAzul",
+          "cachedResultUrl": "/projects/{{PROJECT_ID}}/datatables/{{DATATABLE_ID}}"
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        368
+      ],
+      "id": "7c17d602-36ef-448e-95dd-22cd6f9092ae",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "url": "=https://api-v2.contaazul.com/v1/venda/busca",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "pagina",
+              "value": "={{ $('Set Pagina').item.json.pagina ?? 1 }}"
+            },
+            {
+              "name": "tamanhoPagina",
+              "value": "50"
+            },
+            {
+              "name": "data_vencimento_de",
+              "value": "={{ $('variaveisData').item.json.dailyDe }}"
+            },
+            {
+              "name": "data_vencimento_ate",
+              "value": "={{ $('variaveisData').item.json.dailyAte }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $('Get row(s)').item.json.AccessToken }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        576,
+        960
+      ],
+      "name": "Busca Vendas",
+      "id": "62cba61f-435f-44db-a657-f7622d9dd16c"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "pagina",
+              "value": 1,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        368,
+        368
+      ],
+      "id": "78d64e29-8d19-41ba-be6b-f5a113d5e7b2",
+      "name": "Set Pagina"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.temMaisPaginas }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEquals"
+              },
+              "id": "492ea836-615c-4ca4-a635-1f4f0e4886c6"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        800,
+        544
+      ],
+      "id": "08e36521-913b-4771-b2fa-b23bc669aa9f",
+      "name": "Tem mais paginas?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "pagina",
+              "value": "={{ $('Set Pagina').item.json.pagina + 1 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1024,
+        624
+      ],
+      "id": "e93ba8f8-8bd9-423c-a0cf-f9c48e9bb98a",
+      "name": "Incrementa Pagina"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.temMaisPaginas }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEquals"
+              },
+              "id": "492ea836-615c-4ca4-a635-1f4f0e4886c6"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        800,
+        144
+      ],
+      "id": "2f9607a4-f24a-4c1c-9aac-231f4d20fd41",
+      "name": "Tem mais paginas?1"
+    },
+    {
+      "parameters": {
+        "url": "https://api-v2.contaazul.com/v1/financeiro/eventos-financeiros/contas-a-pagar/buscar",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "data_vencimento_de",
+              "value": "={{ $('variaveisData').item.json.mensalDe }}"
+            },
+            {
+              "name": "data_vencimento_ate",
+              "value": "={{ $('variaveisData').item.json.mensalAte }}"
+            },
+            {
+              "name": "tamanho_pagina",
+              "value": "50"
+            },
+            {
+              "name": "pagina",
+              "value": "={{ $('Set Pagina').item.json.pagina ?? 1 }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $('Get row(s)').item.json.AccessToken }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        576,
+        144
+      ],
+      "id": "331275df-f573-41f8-a502-e198ce4d5da8",
+      "name": "Busca Contas a Pagar ContaAzul"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "pagina",
+              "value": "={{ $('Set Pagina').item.json.pagina + 1 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1024,
+        240
+      ],
+      "id": "724d4ef2-a1c2-40f4-b904-9bdb0fde87df",
+      "name": "Incrementa Pagina1"
+    },
+    {
+      "parameters": {
+        "content": "Pega paginação -> Pega itens até o limite da pagina -> Se houver mais que o limite reinicia com a paginação +1 até parar de retornar itens -> Se mão houver mais itens segue ->",
+        "height": 2240,
+        "width": 1040
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        320,
+        -80
+      ],
+      "id": "7b5dba5f-0ea5-4eca-8d7c-d0565b95752c",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Contas a Receber",
+        "height": 400,
+        "width": 688,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        512,
+        448
+      ],
+      "id": "c8b681d4-589b-43f6-a078-dae9d14d7f4a",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "url": "https://api-v2.contaazul.com/v1/financeiro/eventos-financeiros/contas-a-receber/buscar",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "data_vencimento_de",
+              "value": "={{ $('variaveisData').item.json.mensalDe }}"
+            },
+            {
+              "name": "data_vencimento_ate",
+              "value": "={{ $('variaveisData').item.json.mensalAte }}"
+            },
+            {
+              "name": "pagina",
+              "value": "={{ $('Set Pagina').item.json.pagina ?? 1 }}"
+            },
+            {
+              "name": "tamanho_pagina",
+              "value": "50"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $('Get row(s)').item.json.AccessToken }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        576,
+        544
+      ],
+      "id": "7bcdaba2-f0d5-49e6-86b7-8dca656c7947",
+      "name": "Busca Contas a Receber ContaAzul"
+    },
+    {
+      "parameters": {
+        "content": "## Contas a Pagar",
+        "height": 400,
+        "width": 688,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        512,
+        32
+      ],
+      "id": "ebf8ac3c-9bb1-40ef-a0f0-4398670cdf6a",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.temMaisPaginas }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEquals"
+              },
+              "id": "492ea836-615c-4ca4-a635-1f4f0e4886c6"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        800,
+        960
+      ],
+      "id": "2857f2cd-42f8-4bcd-bfdc-b37a7c36ad42",
+      "name": "Tem mais paginas?2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "pagina",
+              "value": "={{ $('Set Pagina').item.json.pagina + 1 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1024,
+        1040
+      ],
+      "id": "ca86b35c-6e7f-457b-8e25-6399910039de",
+      "name": "Incrementa Pagina2"
+    },
+    {
+      "parameters": {
+        "content": "## Vendas",
+        "height": 400,
+        "width": 688,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        512,
+        864
+      ],
+      "id": "5efa9d6c-2503-4656-b2a3-3e8fcae6169e",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "numberInputs": 5
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1472,
+        1904
+      ],
+      "id": "f73acfab-d4b1-408f-8696-9f11ce5b2dd0",
+      "name": "Merge Todos os Dados"
+    },
+    {
+      "parameters": {
+        "url": "https://api-v2.contaazul.com/v1/notas-fiscais-servico",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "data_competencia_de",
+              "value": "={{ $now.minus({months: 1}).startOf('month').plus({days: 4}).toFormat('yyyy-MM-dd') }}"
+            },
+            {
+              "name": "data_competencia_ate",
+              "value": "={{ $now.minus({months: 1}).startOf('month').plus({days: 18}).toFormat('yyyy-MM-dd') }}"
+            },
+            {
+              "name": "pagina",
+              "value": "={{ $('Set Pagina').item.json.pagina ?? 1 }}"
+            },
+            {
+              "name": "tamanho_pagina",
+              "value": "50"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Get row(s)').item.json.AccessToken }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        576,
+        1376
+      ],
+      "id": "dc515fb9-f114-488d-81c4-84406e266609",
+      "name": "Busca NFS-e Parte 1"
+    },
+    {
+      "parameters": {
+        "url": "https://api-v2.contaazul.com/v1/notas-fiscais-servico",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "data_competencia_de",
+              "value": "={{ $now.minus({months: 1}).startOf('month').plus({days: 19}).toFormat('yyyy-MM-dd') }}"
+            },
+            {
+              "name": "data_competencia_ate",
+              "value": "={{ $now.startOf('month').plus({days: 4}).toFormat('yyyy-MM-dd') }}"
+            },
+            {
+              "name": "pagina",
+              "value": "={{ $('Set Pagina').item.json.pagina ?? 1 }}"
+            },
+            {
+              "name": "tamanho_pagina",
+              "value": "50"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Get row(s)').item.json.AccessToken }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        576,
+        1808
+      ],
+      "id": "5bcb2dfc-954d-4cfa-9a73-98672a563e0d",
+      "name": "Busca NFS-e Parte 2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.temMaisPaginas }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEquals"
+              },
+              "id": "492ea836-615c-4ca4-a635-1f4f0e4886c6"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        800,
+        1376
+      ],
+      "id": "6301941b-93db-4809-ab73-eb09ebe56eac",
+      "name": "Tem mais paginas?4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.temMaisPaginas }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEquals"
+              },
+              "id": "492ea836-615c-4ca4-a635-1f4f0e4886c6"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        800,
+        1808
+      ],
+      "id": "1f3195ae-81a4-443b-b920-5549c703ec83",
+      "name": "Tem mais paginas?5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "pagina",
+              "value": "={{ $('Set Pagina').item.json.pagina + 1 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1024,
+        1456
+      ],
+      "id": "8ede4b4f-d2f9-4578-aa12-263440b36539",
+      "name": "Incrementa Pagina4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "pagina",
+              "value": "={{ $('Set Pagina').item.json.pagina + 1 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1024,
+        1888
+      ],
+      "id": "cc4718fd-a505-4be7-be89-eccf9a1a7d57",
+      "name": "Incrementa Pagina5"
+    },
+    {
+      "parameters": {
+        "content": "## NF-e PT1",
+        "height": 400,
+        "width": 688,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        512,
+        1280
+      ],
+      "id": "dc2ab028-5742-46a9-8171-e029b92729a5",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "content": "## NF-e PT2",
+        "height": 400,
+        "width": 688,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        512,
+        1712
+      ],
+      "id": "69170cfb-2367-4a76-87e5-66e87d610ab6",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1632,
+        1952
+      ],
+      "id": "6cc43169-a5d9-462f-9c3c-1d3c7bb6dd96",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "content": "## Agrega tudo em uma só execução e array",
+        "height": 352,
+        "width": 368
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        1808
+      ],
+      "id": "6028d712-4c15-4f0e-a752-715f76f8a9cd",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f833a266-0d4b-420f-b988-13b5a6b82256",
+              "leftValue": "={{ $json['Day of month'] }}",
+              "rightValue": "5",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -368,
+        336
+      ],
+      "id": "15fa5a1c-e2a7-4b4d-9730-325de76bf045",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a038efe2-9374-4f70-886b-e1f140383676",
+              "name": "mensalDe",
+              "value": "={{ $now.minus({months: 1}).startOf('month').plus({days: 4}).toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "c59caa3a-fb5d-4391-b215-9ce3a25f154c",
+              "name": "mensalAte",
+              "value": "={{ $now.startOf('month').plus({days: 4}).toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "a4a79f5c-0a76-4422-a77f-75125063fbd6",
+              "name": "dailyDe",
+              "value": "={{ $now.minus({days: 1}).toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "b046304f-6b25-4870-8b0e-61af80c90bd1",
+              "name": "dailyAte",
+              "value": "={{ $now.minus({days: 0}).toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -192,
+        416
+      ],
+      "id": "52e47701-55ff-49a6-a3d0-167983de0b44",
+      "name": "dadosDaily"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6f7bd4de-cd0c-4215-8af2-253e8d4a582d",
+              "name": "mensalDe",
+              "value": "={{ $now.minus({months: 1}).startOf('month').plus({days: 4}).toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "2269ab86-0e64-4447-8cb6-37beb43ca1d0",
+              "name": "mensalAte",
+              "value": "={{ $now.startOf('month').plus({days: 4}).toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "b2fe38ba-95c7-4b4a-b312-dbfaa1e3e94d",
+              "name": "dailyDe",
+              "value": "={{ $now.minus({months: 1}).startOf('month').plus({days: 4}).toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "01adb990-869d-4edd-8d7a-32684776d128",
+              "name": "dailyAte",
+              "value": "={{ $now.startOf('month').plus({days: 4}).toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -192,
+        240
+      ],
+      "id": "20170343-5f59-4290-a3e3-e575d6711b5e",
+      "name": "dadosMensal"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9eb66aee-e6ba-45fb-a366-9ced1f0b2599",
+              "name": "mensalDe",
+              "value": "={{ $json.mensalDe }}",
+              "type": "string"
+            },
+            {
+              "id": "e4d3d12f-9b7c-4377-8a21-637e5c671576",
+              "name": "mensalAte",
+              "value": "={{ $json.mensalAte }}",
+              "type": "string"
+            },
+            {
+              "id": "c5832cee-f602-4ad2-afe5-d72ae725459e",
+              "name": "dailyDe",
+              "value": "={{ $json.dailyDe }}",
+              "type": "string"
+            },
+            {
+              "id": "9b9a3024-feb6-41a3-b794-0dd6e98693af",
+              "name": "dailyAte",
+              "value": "={{ $json.dailyAte }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        16,
+        368
+      ],
+      "id": "fabce1b8-e12e-4182-9a61-7b5adcd3a1ac",
+      "name": "variaveisData"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Set Pagina",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Busca Vendas": {
+      "main": [
+        [
+          {
+            "node": "Tem mais paginas?2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Pagina": {
+      "main": [
+        [
+          {
+            "node": "Busca Contas a Receber ContaAzul",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Busca Contas a Pagar ContaAzul",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Busca Vendas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Busca NFS-e Parte 1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Busca NFS-e Parte 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem mais paginas?": {
+      "main": [
+        [
+          {
+            "node": "Merge Todos os Dados",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Incrementa Pagina",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Incrementa Pagina": {
+      "main": [
+        [
+          {
+            "node": "Busca Contas a Receber ContaAzul",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem mais paginas?1": {
+      "main": [
+        [
+          {
+            "node": "Merge Todos os Dados",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Incrementa Pagina1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Busca Contas a Pagar ContaAzul": {
+      "main": [
+        [
+          {
+            "node": "Tem mais paginas?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Incrementa Pagina1": {
+      "main": [
+        [
+          {
+            "node": "Busca Contas a Pagar ContaAzul",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Busca Contas a Receber ContaAzul": {
+      "main": [
+        [
+          {
+            "node": "Tem mais paginas?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem mais paginas?2": {
+      "main": [
+        [
+          {
+            "node": "Merge Todos os Dados",
+            "type": "main",
+            "index": 2
+          }
+        ],
+        [
+          {
+            "node": "Incrementa Pagina2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Incrementa Pagina2": {
+      "main": [
+        [
+          {
+            "node": "Busca Vendas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Busca NFS-e Parte 1": {
+      "main": [
+        [
+          {
+            "node": "Tem mais paginas?4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Busca NFS-e Parte 2": {
+      "main": [
+        [
+          {
+            "node": "Tem mais paginas?5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem mais paginas?4": {
+      "main": [
+        [
+          {
+            "node": "Merge Todos os Dados",
+            "type": "main",
+            "index": 3
+          }
+        ],
+        [
+          {
+            "node": "Incrementa Pagina4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem mais paginas?5": {
+      "main": [
+        [
+          {
+            "node": "Merge Todos os Dados",
+            "type": "main",
+            "index": 4
+          }
+        ],
+        [
+          {
+            "node": "Incrementa Pagina5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Incrementa Pagina4": {
+      "main": [
+        [
+          {
+            "node": "Busca NFS-e Parte 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Incrementa Pagina5": {
+      "main": [
+        [
+          {
+            "node": "Busca NFS-e Parte 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Todos os Dados": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "dadosMensal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "dadosDaily",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dadosDaily": {
+      "main": [
+        [
+          {
+            "node": "variaveisData",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dadosMensal": {
+      "main": [
+        [
+          {
+            "node": "variaveisData",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "variaveisData": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "{{VERSION_ID}}",
+  "meta": {
+    "instanceId": "{{INSTANCE_ID}}"
+  },
+  "id": "{{WORKFLOW_ID}}",
+  "tags": []
+}
