@@ -1,0 +1,735 @@
+{
+  "name": "Lemon Consultoria - Envio diario & Mensal",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "{{GOOGLE_FILE_ID}}",
+          "mode": "list",
+          "cachedResultName": "Modelo_Lemon-Consultoria",
+          "cachedResultUrl": "{{GOOGLE_FILE_URL}}"
+        },
+        "name": "=Planilha Daily - {{ $now.format('yyyy-MM-dd') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1456,
+        2080
+      ],
+      "id": "85ac480a-f521-4552-9efa-9d67648d7e61",
+      "name": "Copy file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Drive Darkay"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "writer",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1632,
+        2080
+      ],
+      "id": "ff03d7be-ad00-43dc-949f-f18890c2c359",
+      "name": "Share file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Drive Darkay"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Copy file').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "{{GOOGLE_SHEET_URL}}"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "dados"
+          ],
+          "schema": [
+            {
+              "id": "dados",
+              "displayName": "dados",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "descricao",
+              "displayName": "descricao",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "total",
+              "displayName": "total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "data_vencimento",
+              "displayName": "data_vencimento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "data_criacao",
+              "displayName": "data_criacao",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "data_alteracao",
+              "displayName": "data_alteracao",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "cliente_nome",
+              "displayName": "cliente_nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "cliente_email",
+              "displayName": "cliente_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "pago",
+              "displayName": "pago",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nao_pago",
+              "displayName": "nao_pago",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tipo",
+              "displayName": "tipo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "numero",
+              "displayName": "numero",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2032,
+        2080
+      ],
+      "id": "31247abd-d076-4e4d-9c0e-bb8189275991",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Sheets Darkay"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $('subflowCall').all();\nconst resultado = [];\n\nfor (const item of allItems) {\n  const data = item.json.data;\n\n  if (!Array.isArray(data)) continue;\n\n  for (const bloco of data) {\n    // Contas a Pagar e Contas a Receber\n    if (bloco.itens && bloco.itens.length > 0 && bloco.totais !== undefined && !bloco.total_itens) {\n      for (const registro of bloco.itens) {\n        resultado.push({\n          json: {\n            origem: registro.cliente ? 'CONTAS_RECEBER' : 'CONTAS_PAGAR',\n            id: registro.id ?? '',\n            descricao: registro.descricao ?? '',\n            status: registro.status_traduzido ?? registro.status ?? '',\n            total: registro.total ?? '',\n            data_vencimento: registro.data_vencimento ?? '',\n            data_competencia: registro.data_competencia ?? '',\n            data_criacao: registro.data_criacao ?? '',\n            data_alteracao: registro.data_alteracao ?? '',\n            pago: registro.pago ?? '',\n            nao_pago: registro.nao_pago ?? '',\n            cliente_nome: registro.cliente?.nome ?? '',\n            fornecedor_nome: registro.fornecedor?.nome ?? '',\n            categoria_nome: registro.categorias?.[0]?.nome ?? '',\n            centro_custo: registro.centros_de_custo?.[0]?.nome ?? '',\n            renegociacao: registro.renegociacao ?? '',\n            // Campos vazios para NFS-e e Vendas\n            numero_venda: '',\n            numero_nfse: '',\n            numero_rps: '',\n            codigo_cnae: '',\n            documento_cliente: '',\n            cidade_emissao: '',\n            tipo: '',\n            id_contrato: ''\n          }\n        });\n      }\n    }\n\n    // Vendas\n    if (bloco.total_itens !== undefined && bloco.itens && bloco.itens.length > 0) {\n      for (const registro of bloco.itens) {\n        resultado.push({\n          json: {\n            origem: 'VENDAS',\n            id: registro.id ?? '',\n            descricao: registro.situacao?.descricao ?? '',\n            status: registro.situacao?.nome ?? '',\n            total: registro.total ?? '',\n            data_vencimento: registro.data ?? '',\n            data_competencia: '',\n            data_criacao: registro.criado_em ?? '',\n            data_alteracao: registro.data_alteracao ?? '',\n            pago: '',\n            nao_pago: '',\n            cliente_nome: registro.cliente?.nome ?? '',\n            cliente_email: registro.cliente?.email ?? '',\n            fornecedor_nome: '',\n            categoria_nome: '',\n            centro_custo: '',\n            renegociacao: '',\n            numero_venda: registro.numero ?? '',\n            numero_nfse: '',\n            numero_rps: '',\n            codigo_cnae: '',\n            documento_cliente: '',\n            cidade_emissao: '',\n            tipo: registro.tipo ?? '',\n            id_contrato: registro.id_contrato ?? ''\n          }\n        });\n      }\n    }\n\n    // NFS-e\n    if (bloco.itens && bloco.paginacao !== undefined) {\n      for (const registro of bloco.itens) {\n        resultado.push({\n          json: {\n            origem: 'NFSE',\n            id: registro.id ?? '',\n            descricao: '',\n            status: registro.status ?? '',\n            total: registro.valor_total_nfse ?? '',\n            data_vencimento: '',\n            data_competencia: registro.data_competencia ?? '',\n            data_criacao: registro.informacao_transmissao?.data_inicio_emissao ?? '',\n            data_alteracao: '',\n            pago: '',\n            nao_pago: '',\n            cliente_nome: registro.nome_cliente ?? '',\n            cliente_email: '',\n            fornecedor_nome: '',\n            categoria_nome: '',\n            centro_custo: '',\n            renegociacao: '',\n            numero_venda: registro.numero_venda ?? '',\n            numero_nfse: registro.numero_nfse ?? '',\n            numero_rps: registro.numero_rps ?? '',\n            codigo_cnae: registro.codigo_cnae ?? '',\n            documento_cliente: registro.documento_cliente ?? '',\n            cidade_emissao: `${registro.cidade_emissao?.nome ?? ''} - ${registro.cidade_emissao?.estado ?? ''}`,\n            tipo: '',\n            id_contrato: registro.id_contrato ?? ''\n          }\n        });\n      }\n    }\n  }\n}\n\nreturn resultado;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1856,
+        2080
+      ],
+      "id": "257b9bf3-30b1-4c22-99c1-fadfe8fc1ecb",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "{{RECIPIENT_EMAIL}}",
+        "subject": "=Planilha - {{ $now.format('yyyy-MM-dd') }}",
+        "emailType": "text",
+        "message": "Segue a planilha com os dados consolidados.",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2896,
+        1824
+      ],
+      "id": "0d9ff859-72e9-4710-b236-5a30e2feb9ad",
+      "name": "Send a message1",
+      "webhookId": "{{WEBHOOK_ID}}",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Gmail Darkay"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2224,
+        2080
+      ],
+      "id": "6d9bec02-0f0f-4fac-abb2-5cd76cea431a",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://login.microsoftonline.com/{{AZURE_TENANT_ID}}/oauth2/v2.0/token",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "client_credentials"
+            },
+            {
+              "name": "client_id",
+              "value": "{{AZURE_CLIENT_ID}}"
+            },
+            {
+              "name": "client_secret",
+              "value": "{{AZURE_CLIENT_SECRET}}"
+            },
+            {
+              "name": "scope",
+              "value": "https://graph.microsoft.com/.default"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2448,
+        2080
+      ],
+      "id": "a4267b0e-1f87-4e8a-b61a-e9e6f1950b81",
+      "name": "Obter Token SharePoint"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Copy file').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "sheetsToFormat": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            }
+          },
+          "fileName": "={{ $('Copy file').item.json.name }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2624,
+        2080
+      ],
+      "id": "68fa9d86-fdf6-4be3-bf69-c1c2ebbd3489",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Drive Darkay"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteFile",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Copy file').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        3360,
+        2080
+      ],
+      "id": "3fb8dfa8-44d3-424d-9ca6-1176363d07ef",
+      "name": "Delete a file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Drive Darkay"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3184,
+        2080
+      ],
+      "id": "4dbf79bd-c435-4bd8-8e9c-5216a78fc7e3",
+      "name": "Wait",
+      "webhookId": "{{WEBHOOK_ID}}"
+    },
+    {
+      "parameters": {
+        "content": "## Copia arquivo base -> compartilha o mesmo arquivo",
+        "height": 256,
+        "width": 368
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1424,
+        2000
+      ],
+      "id": "ba949783-9496-48d6-adb1-33106e382fcb",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Cria uma array com os itens -> Coloca dentro do sheets -> Agrega tudo em um só execução",
+        "height": 256,
+        "width": 576
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1808,
+        2000
+      ],
+      "id": "38bc5c7f-e69e-48cb-bc92-7fbc49cb2fce",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Envia o documento para o email ",
+        "height": 240,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2784,
+        1744
+      ],
+      "id": "4087a0e2-cc02-4caa-9636-a048e3a679f0",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "## Pego token -> Baixo arquivo -> Armazeno na pasta do sharepoint",
+        "height": 256,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2400,
+        2000
+      ],
+      "id": "3c6a2c86-f568-4f30-9476-dbde4c87c9c8",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "## Delay de 10 segundos -> Apago o arquivo do drive da darkay",
+        "height": 256,
+        "width": 384
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3136,
+        2000
+      ],
+      "id": "2b7d3ea5-7b27-4a99-97db-72c7456ab465",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "Ativa uma vez por dia as 06:30AM -> ativa subflow -> Recebe os dados da busca",
+        "height": 256,
+        "width": 384
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        2000
+      ],
+      "id": "eec4c589-4ee6-45b5-8772-0538daf23c9f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 6,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        1056,
+        2080
+      ],
+      "id": "6746942e-7f6a-4e7e-b469-6466f4036097",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "{{SUBFLOW_WORKFLOW_ID}}",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/{{SUBFLOW_WORKFLOW_ID}}",
+          "cachedResultName": "My workflow 13"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1264,
+        2080
+      ],
+      "id": "eddb4570-f434-4ee3-a9be-10dd48ae55c3",
+      "name": "subflowCall"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://graph.microsoft.com/v1.0/drives/{{SHAREPOINT_DRIVE_ID}}/root:/FINANCEIRO%20LEMON/Teste%20IA/{{ $('Download file').item.binary.data.fileName }}.xlsx:/content",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Obter Token SharePoint').item.json.access_token }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2896,
+        2080
+      ],
+      "id": "7f4b88f8-ff6a-4eed-90d0-659b5e111fe3",
+      "name": "Upload Arquivo SharePoint1",
+      "alwaysOutputData": false
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Copy file": {
+      "main": [
+        [
+          {
+            "node": "Share file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share file": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        []
+      ]
+    },
+    "Obter Token SharePoint": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Obter Token SharePoint",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload Arquivo SharePoint1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Delete a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "subflowCall",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "subflowCall": {
+      "main": [
+        [
+          {
+            "node": "Copy file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Arquivo SharePoint1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "{{ERROR_WORKFLOW_ID}}",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "{{VERSION_ID}}",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "{{INSTANCE_ID}}"
+  },
+  "id": "{{WORKFLOW_ID}}",
+  "tags": []
+}
