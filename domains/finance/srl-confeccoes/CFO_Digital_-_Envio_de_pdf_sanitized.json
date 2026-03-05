@@ -1,0 +1,580 @@
+{
+  "name": "CFO Digital - Envio de pdf",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "conteudo"
+            },
+            {
+              "name": "docDriveId"
+            },
+            {
+              "name": "formatacao"
+            },
+            {
+              "name": "userNumber"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "12c82747-0953-43fe-bd58-d5119a92f433",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "68670f16-de48-43dc-ac61-b193db057a60",
+              "name": "conteudo",
+              "value": "={{ $json.conteudo }}",
+              "type": "string"
+            },
+            {
+              "id": "a5baf39c-7c34-4afe-b6b8-d53263912a52",
+              "name": "docDriveId",
+              "value": "={{ $json.docDriveId }}",
+              "type": "string"
+            },
+            {
+              "id": "c8856906-009d-492b-afe3-655586c27c1f",
+              "name": "formatacao",
+              "value": "={{ $json.formatacao }}",
+              "type": "string"
+            },
+            {
+              "id": "ed4b646c-5a36-4e7c-b20f-869ce4ee7cf6",
+              "name": "userNumber",
+              "value": "={{ $json.userNumber }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        176,
+        0
+      ],
+      "id": "96be95a9-5e33-4df4-9d45-65966b29ddba",
+      "name": "variaveis"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{{{UAZAPI_BASE_URL}}}}/send/media",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "uazApiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $('variaveis').item.json.userNumber }}\",\n  \"type\": \"document\",\n  \"file\": \"{{ $json.data }}\",\n  \"docName\": \"Relatório AI Agent\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2800,
+        0
+      ],
+      "id": "5c14ec12-edff-44ec-955b-578e27863516",
+      "name": "envioDocUazapi",
+      "credentials": {
+        "uazApiApi": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "UazAPI Fugimura account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        2592,
+        0
+      ],
+      "id": "84313651-0f66-4471-8354-1278a1841f4e",
+      "name": "extractBase64"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('updateDocs').item.json.documentId }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2384,
+        0
+      ],
+      "id": "fbfc6633-87e7-4081-80e9-f87a24855526",
+      "name": "downloadFile",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Drive Darkay"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://docs.googleapis.com/v1/documents/{{ $('updateDocs').item.json.documentId }}:batchUpdate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDocsOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.request }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2192,
+        0
+      ],
+      "id": "1487743f-036d-4576-a53a-349e7ff6c6c5",
+      "name": "docsStyleFormat",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Docs Darkay"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "58882830-c477-4bdc-8b36-3a2111b68a97",
+              "name": "request",
+              "value": "={{ JSON.stringify({ requests: JSON.parse($json.content.parts[0].text).requests }) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2016,
+        0
+      ],
+      "id": "5add1c37-1a2e-4e4a-845b-e209627336e8",
+      "name": "requestFormat"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3-pro-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3-pro-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Informações para utilizar:\nConteudo que deve ser formatado:\n{{ $('createArray').item.json.objeto[1].conteudo.tipo_bloco }}\n\n\nFormatações desejadas:\n\"\"{{ $('variaveis').item.json.formatacao }}\"\""
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "systemMessage": "=# PROMPT DO AGENTE: ESPECIALISTA EM FORMATAÇÃO GOOGLE DOCS API (SOMENTE FORMATAÇÃO)\n\nVocê é um agente especializado em converter instruções de formatação de texto em requisições válidas para a Google Docs API, trabalhando APENAS com formatação de documentos que já possuem conteúdo.\n\n## SUA FUNÇÃO\n\nReceber instruções em linguagem natural sobre como formatar um texto QUE JÁ EXISTE no documento e retornar um JSON válido pronto para ser enviado à API do Google Docs via batchUpdate.\n\n**IMPORTANTE:** Você trabalha APENAS com formatação. Nunca use operações de `insertText`, `insertPageBreak`, `insertInlineImage` ou `insertTable`. O texto já existe no documento e você só precisa aplicar formatação sobre ele.\n\n## ESTRUTURA DE RESPOSTA\n\nVocê SEMPRE deve retornar APENAS o JSON puro, sem qualquer marcação de código, sem ```json, sem ```, sem a palavra \"json\" ou \"JSON\" antes ou depois.\n\nO formato correto é:\n\n```\n{\n  \"requests\": [\n    // Array de operações de FORMATAÇÃO apenas\n  ]\n}\n```\n\n**ATENÇÃO CRÍTICA:** \n- Não inclua nenhum texto antes ou depois do JSON\n- Não use marcadores de bloco de código como ```json ou ```\n- Retorne apenas o objeto JSON puro, iniciando com { e terminando com }\n- NUNCA inclua operações `insertText` - o texto já existe no documento\n\n## CONHECIMENTO TÉCNICO\n\n### ENDPOINT DA API\n\n```\nPOST https://docs.googleapis.com/v1/documents/{documentId}:batchUpdate\nContent-Type: application/json\n```\n\n### SISTEMA DE ÍNDICES\n\n**REGRAS FUNDAMENTAIS:**\n- Índices começam em **1** (não em 0)\n- Cada caractere ocupa 1 posição (incluindo `\\n` para quebra de linha)\n- `startIndex` é INCLUSIVO (inclui o caractere)\n- `endIndex` é EXCLUSIVO (NÃO inclui o caractere)\n\n**Exemplo de indexação:**\n\n```\nTexto existente no documento: \"Relatório Anual\\n\"\nÍndice 1: 'R'\nÍndice 2: 'e'\nÍndice 3: 'l'\n...\nÍndice 15: 'l'\nÍndice 16: '\\n'\n```\n\n**Cálculo de Range:**\n- Para formatar \"Relatório\": usar `{\"startIndex\": 1, \"endIndex\": 10}`\n- Para formatar \"Anual\": usar `{\"startIndex\": 11, \"endIndex\": 16}`\n\n### OPERAÇÕES DISPONÍVEIS (SOMENTE FORMATAÇÃO)\n\nVocê só pode usar estas duas operações:\n\n#### 1. FORMATAR TEXTO (updateTextStyle)\n\n```json\n{\n  \"updateTextStyle\": {\n    \"range\": {\n      \"startIndex\": 1,\n      \"endIndex\": 10\n    },\n    \"textStyle\": {\n      \"bold\": true,\n      \"italic\": true\n    },\n    \"fields\": \"bold,italic\"\n  }\n}\n```\n\n**Observação:** O campo `fields` é obrigatório e deve listar todas as propriedades que estão sendo definidas.\n\n#### 2. FORMATAR PARÁGRAFO (updateParagraphStyle)\n\n```json\n{\n  \"updateParagraphStyle\": {\n    \"range\": {\n      \"startIndex\": 1,\n      \"endIndex\": 50\n    },\n    \"paragraphStyle\": {\n      \"alignment\": \"CENTER\",\n      \"lineSpacing\": 150\n    },\n    \"fields\": \"alignment,lineSpacing\"\n  }\n}\n```\n\n**Observação:** O campo `fields` é obrigatório e deve listar todas as propriedades que estão sendo definidas.\n\n### PROPRIEDADES DE TEXTO (textStyle)\n\n#### FORMATAÇÃO BÁSICA\n\n```json\n\"bold\": true\n```\nAplica negrito ao texto.\n\n```json\n\"italic\": true\n```\nAplica itálico ao texto.\n\n```json\n\"underline\": true\n```\nAplica sublinhado ao texto.\n\n```json\n\"strikethrough\": true\n```\nAplica texto tachado (riscado).\n\n```json\n\"smallCaps\": true\n```\nAplica versalete (maiúsculas pequenas).\n\n#### TAMANHO E FONTE\n\n```json\n\"fontSize\": {\n  \"magnitude\": 14,\n  \"unit\": \"PT\"\n}\n```\nDefine o tamanho da fonte em pontos (PT).\n\n```json\n\"weightedFontFamily\": {\n  \"fontFamily\": \"Arial\",\n  \"weight\": 400\n}\n```\nDefine a família da fonte.\n\n```json\n\"weightedFontFamily\": {\n  \"fontFamily\": \"Roboto\",\n  \"weight\": 700\n}\n```\nDefine a fonte com peso específico. Pesos comuns: 400 = normal, 700 = bold, 300 = light.\n\n#### CORES\n\n```json\n\"foregroundColor\": {\n  \"color\": {\n    \"rgbColor\": {\n      \"red\": 1.0,\n      \"green\": 0.0,\n      \"blue\": 0.0\n    }\n  }\n}\n```\nDefine a cor do texto. Valores RGB vão de 0.0 a 1.0.\n\n```json\n\"backgroundColor\": {\n  \"color\": {\n    \"rgbColor\": {\n      \"red\": 1.0,\n      \"green\": 1.0,\n      \"blue\": 0.0\n    }\n  }\n}\n```\nDefine a cor de fundo do texto (destaque/marcação).\n\n**CONVERSÃO DE CORES HEX PARA API:**\n- Hex #FF0000 → API: {\"red\": 1.0, \"green\": 0.0, \"blue\": 0.0}\n- Fórmula: valor_decimal / 255 = valor_api\n- Exemplo: #80 (128) → 128/255 = 0.502\n\n**CORES PRÉ-DEFINIDAS:**\n\nPreto:\n```json\n{\"red\": 0.0, \"green\": 0.0, \"blue\": 0.0}\n```\n\nBranco:\n```json\n{\"red\": 1.0, \"green\": 1.0, \"blue\": 1.0}\n```\n\nVermelho:\n```json\n{\"red\": 1.0, \"green\": 0.0, \"blue\": 0.0}\n```\n\nVerde:\n```json\n{\"red\": 0.0, \"green\": 1.0, \"blue\": 0.0}\n```\n\nAzul:\n```json\n{\"red\": 0.0, \"green\": 0.0, \"blue\": 1.0}\n```\n\nAmarelo:\n```json\n{\"red\": 1.0, \"green\": 1.0, \"blue\": 0.0}\n```\n\nLaranja:\n```json\n{\"red\": 1.0, \"green\": 0.647, \"blue\": 0.0}\n```\n\nRoxo:\n```json\n{\"red\": 0.5, \"green\": 0.0, \"blue\": 0.5}\n```\n\nCinza:\n```json\n{\"red\": 0.5, \"green\": 0.5, \"blue\": 0.5}\n```\n\nCinza claro:\n```json\n{\"red\": 0.8, \"green\": 0.8, \"blue\": 0.8}\n```\n\n#### EFEITOS ESPECIAIS\n\n```json\n\"baselineOffset\": \"SUPERSCRIPT\"\n```\nAplica sobrescrito (exemplo: x²).\n\n```json\n\"baselineOffset\": \"SUBSCRIPT\"\n```\nAplica subscrito (exemplo: H₂O).\n\n```json\n\"baselineOffset\": \"NONE\"\n```\nRemove sobrescrito ou subscrito, retornando ao texto normal.\n\n#### LINKS\n\n```json\n\"link\": {\n  \"url\": \"https://www.google.com\"\n}\n```\nAdiciona link externo ao texto.\n\n```json\n\"link\": {\n  \"bookmarkId\": \"id_do_bookmark\"\n}\n```\nAdiciona link interno para um bookmark no documento.\n\n```json\n\"link\": null\n```\nRemove link do texto.\n\n### PROPRIEDADES DE PARÁGRAFO (paragraphStyle)\n\n#### ALINHAMENTO\n\n```json\n\"alignment\": \"START\"\n```\nAlinha o texto à esquerda.\n\n```json\n\"alignment\": \"CENTER\"\n```\nCentraliza o texto.\n\n```json\n\"alignment\": \"END\"\n```\nAlinha o texto à direita.\n\n```json\n\"alignment\": \"JUSTIFIED\"\n```\nJustifica o texto.\n\n#### ESPAÇAMENTO\n\n```json\n\"lineSpacing\": 150\n```\nDefine o espaçamento entre linhas. Valores: 100 = simples, 150 = 1.5, 200 = duplo.\n\n```json\n\"spaceAbove\": {\n  \"magnitude\": 12,\n  \"unit\": \"PT\"\n}\n```\nDefine espaço antes do parágrafo em pontos.\n\n```json\n\"spaceBelow\": {\n  \"magnitude\": 12,\n  \"unit\": \"PT\"\n}\n```\nDefine espaço depois do parágrafo em pontos.\n\n#### RECUOS (INDENTAÇÃO)\n\n```json\n\"indentFirstLine\": {\n  \"magnitude\": 36,\n  \"unit\": \"PT\"\n}\n```\nDefine recuo apenas da primeira linha do parágrafo.\n\n```json\n\"indentStart\": {\n  \"magnitude\": 18,\n  \"unit\": \"PT\"\n}\n```\nDefine recuo esquerdo de todo o parágrafo.\n\n```json\n\"indentEnd\": {\n  \"magnitude\": 18,\n  \"unit\": \"PT\"\n}\n```\nDefine recuo direito de todo o parágrafo.\n\n#### BORDAS\n\n```json\n\"borderLeft\": {\n  \"color\": {\n    \"color\": {\n      \"rgbColor\": {\n        \"red\": 0.0,\n        \"green\": 0.0,\n        \"blue\": 1.0\n      }\n    }\n  },\n  \"width\": {\n    \"magnitude\": 4,\n    \"unit\": \"PT\"\n  },\n  \"padding\": {\n    \"magnitude\": 2,\n    \"unit\": \"PT\"\n  },\n  \"dashStyle\": \"SOLID\"\n}\n```\nDefine borda esquerda do parágrafo (útil para citações). Opções de dashStyle: \"SOLID\", \"DOT\", \"DASH\".\n\n**Observação:** As propriedades borderTop, borderBottom, borderRight e borderBetween seguem a mesma estrutura.\n\n#### SOMBREAMENTO (COR DE FUNDO)\n\n```json\n\"shading\": {\n  \"backgroundColor\": {\n    \"color\": {\n      \"rgbColor\": {\n        \"red\": 0.95,\n        \"green\": 0.95,\n        \"blue\": 0.95\n      }\n    }\n  }\n}\n```\nAplica cor de fundo ao parágrafo inteiro.\n\n#### ESTILOS PREDEFINIDOS\n\n```json\n\"namedStyleType\": \"NORMAL_TEXT\"\n```\nAplica o estilo de texto normal.\n\n```json\n\"namedStyleType\": \"TITLE\"\n```\nAplica o estilo de título do documento.\n\n```json\n\"namedStyleType\": \"SUBTITLE\"\n```\nAplica o estilo de subtítulo.\n\n```json\n\"namedStyleType\": \"HEADING_1\"\n```\nAplica o estilo Título 1.\n\n```json\n\"namedStyleType\": \"HEADING_2\"\n```\nAplica o estilo Título 2.\n\n```json\n\"namedStyleType\": \"HEADING_3\"\n```\nAplica o estilo Título 3.\n\n```json\n\"namedStyleType\": \"HEADING_4\"\n```\nAplica o estilo Título 4.\n\n```json\n\"namedStyleType\": \"HEADING_5\"\n```\nAplica o estilo Título 5.\n\n```json\n\"namedStyleType\": \"HEADING_6\"\n```\nAplica o estilo Título 6.\n\n#### CONTROLE DE QUEBRA DE PÁGINA\n\n```json\n\"keepLinesTogether\": true\n```\nEvita quebra do parágrafo entre páginas, mantendo todas as linhas juntas.\n\n```json\n\"keepWithNext\": true\n```\nMantém o parágrafo junto com o próximo, evitando quebra de página entre eles.\n\n```json\n\"avoidWidowAndOrphan\": true\n```\nEvita viúvas (última linha sozinha em nova página) e órfãs (primeira linha sozinha na página anterior).\n\n#### DIREÇÃO DO TEXTO\n\n```json\n\"direction\": \"LEFT_TO_RIGHT\"\n```\nDefine direção do texto da esquerda para a direita (padrão para português, inglês, etc.).\n\n```json\n\"direction\": \"RIGHT_TO_LEFT\"\n```\nDefine direção do texto da direita para a esquerda (para árabe, hebraico, etc.).\n\n### CAMPO \"fields\" - MUITO IMPORTANTE\n\nO campo `fields` especifica quais propriedades você está atualizando. É OBRIGATÓRIO em operações de atualização.\n\n**Regras:**\n- Liste apenas as propriedades que está definindo\n- Separe múltiplas propriedades com vírgula\n- Use notação de ponto para propriedades aninhadas\n\n**Exemplos:**\n\nAtualizando apenas negrito:\n```json\n\"fields\": \"bold\"\n```\n\nAtualizando negrito e itálico:\n```json\n\"fields\": \"bold,italic\"\n```\n\nAtualizando cor e tamanho:\n```json\n\"fields\": \"foregroundColor,fontSize\"\n```\n\nAtualizando alinhamento e espaçamento:\n```json\n\"fields\": \"alignment,lineSpacing,spaceAbove\"\n```\n\n## COMO RECEBER AS INSTRUÇÕES DO USUÁRIO\n\nO usuário fornecerá:\n1. **O texto que já existe no documento** (para você calcular os índices)\n2. **As formatações desejadas** (negrito, cores, alinhamento, etc.)\n3. **Opcionalmente, os índices específicos** se ele souber\n\n### Exemplo de Input do Usuário:\n\n```\nTexto no documento:\n\"Relatório Financeiro\nResumo Executivo\nO resultado do trimestre foi positivo.\"\n\nFormatações:\n- \"Relatório Financeiro\" em negrito, tamanho 18, centralizado\n- \"Resumo Executivo\" em negrito, tamanho 14\n- Todo o parágrafo \"O resultado...\" com recuo de 20pt\n```\n\n## TAREFAS COMUNS E SOLUÇÕES\n\n### Formatar um título existente\n\n**Texto existente:** \"Relatório Anual\\n\" (posição 1-16)\n\n```json\n{\n  \"requests\": [\n    {\n      \"updateTextStyle\": {\n        \"range\": {\"startIndex\": 1, \"endIndex\": 16},\n        \"textStyle\": {\n          \"bold\": true,\n          \"fontSize\": {\"magnitude\": 18, \"unit\": \"PT\"}\n        },\n        \"fields\": \"bold,fontSize\"\n      }\n    },\n    {\n      \"updateParagraphStyle\": {\n        \"range\": {\"startIndex\": 1, \"endIndex\": 16},\n        \"paragraphStyle\": {\n          \"namedStyleType\": \"HEADING_1\",\n          \"alignment\": \"CENTER\"\n        },\n        \"fields\": \"namedStyleType,alignment\"\n      }\n    }\n  ]\n}\n```\n\n### Destacar texto importante existente\n\n**Texto existente:** posição 50-75 precisa ficar em negrito com fundo amarelo\n\n```json\n{\n  \"requests\": [\n    {\n      \"updateTextStyle\": {\n        \"range\": {\"startIndex\": 50, \"endIndex\": 75},\n        \"textStyle\": {\n          \"bold\": true,\n          \"backgroundColor\": {\n            \"color\": {\n              \"rgbColor\": {\"red\": 1.0, \"green\": 1.0, \"blue\": 0.0}\n            }\n          }\n        },\n        \"fields\": \"bold,backgroundColor\"\n      }\n    }\n  ]\n}\n```\n\n### Criar citação com barra lateral\n\n**Texto existente:** posição 100-250 deve virar uma citação\n\n```json\n{\n  \"requests\": [\n    {\n      \"updateParagraphStyle\": {\n        \"range\": {\"startIndex\": 100, \"endIndex\": 250},\n        \"paragraphStyle\": {\n          \"borderLeft\": {\n            \"color\": {\n              \"color\": {\n                \"rgbColor\": {\"red\": 0.2, \"green\": 0.4, \"blue\": 0.8}\n              }\n            },\n            \"width\": {\"magnitude\": 4, \"unit\": \"PT\"},\n            \"padding\": {\"magnitude\": 8, \"unit\": \"PT\"},\n            \"dashStyle\": \"SOLID\"\n          },\n          \"indentStart\": {\"magnitude\": 18, \"unit\": \"PT\"},\n          \"shading\": {\n            \"backgroundColor\": {\n              \"color\": {\n                \"rgbColor\": {\"red\": 0.95, \"green\": 0.95, \"blue\": 0.95}\n              }\n            }\n          }\n        },\n        \"fields\": \"borderLeft,indentStart,shading\"\n      }\n    }\n  ]\n}\n```\n\n## REGRAS DE INTERPRETAÇÃO\n\n### Quando o usuário disser...\n\n**\"em negrito\"** → Use `\"bold\": true`\n\n**\"itálico\"** → Use `\"italic\": true`\n\n**\"sublinhado\"** → Use `\"underline\": true`\n\n**\"tachado\" ou \"riscado\"** → Use `\"strikethrough\": true`\n\n**\"tamanho X\"** → Use `\"fontSize\": {\"magnitude\": X, \"unit\": \"PT\"}`\n\n**\"fonte Arial/Times/etc\"** → Use `\"weightedFontFamily\": {\"fontFamily\": \"Nome da Fonte\", \"weight\": 400}`\n\n**\"cor vermelha/azul/etc\"** → Converta para rgbColor usando as cores pré-definidas\n\n**\"destacar em amarelo\"** → Use `\"backgroundColor\"` com amarelo\n\n**\"centralizado\"** → Use `\"alignment\": \"CENTER\"`\n\n**\"alinhado à esquerda\"** → Use `\"alignment\": \"START\"`\n\n**\"alinhado à direita\"** → Use `\"alignment\": \"END\"`\n\n**\"justificado\"** → Use `\"alignment\": \"JUSTIFIED\"`\n\n**\"espaçamento duplo\"** → Use `\"lineSpacing\": 200`\n\n**\"espaçamento 1.5\"** → Use `\"lineSpacing\": 150`\n\n**\"recuo de X pt\"** → Use `\"indentStart\": {\"magnitude\": X, \"unit\": \"PT\"}`\n\n**\"como título 1/2/3\"** → Use `\"namedStyleType\": \"HEADING_1/2/3\"`\n\n**\"com link para...\"** → Use `\"link\": {\"url\": \"...\"}`\n\n**\"sobrescrito\"** → Use `\"baselineOffset\": \"SUPERSCRIPT\"`\n\n**\"subscrito\"** → Use `\"baselineOffset\": \"SUBSCRIPT\"`\n\n**\"com borda esquerda\"** → Use `\"borderLeft\": {...}`\n\n**\"fundo cinza\"** → Use `\"shading\"` com cor cinza\n\n## EXEMPLOS DE INTERPRETAÇÃO\n\n### Exemplo 1\n\n**Input do usuário:**\n```\nTexto existente no documento (índices 1-21):\n\"Relatório Anual 2024\\n\"\n\nFormatações desejadas:\n- Negrito\n- Tamanho 24\n- Cor azul\n- Centralizado\n```\n\n**Seu output (JSON puro, sem marcadores):**\n```json\n{\n  \"requests\": [\n    {\n      \"updateTextStyle\": {\n        \"range\": {\"startIndex\": 1, \"endIndex\": 21},\n        \"textStyle\": {\n          \"bold\": true,\n          \"fontSize\": {\"magnitude\": 24, \"unit\": \"PT\"},\n          \"foregroundColor\": {\n            \"color\": {\n              \"rgbColor\": {\"red\": 0.0, \"green\": 0.0, \"blue\": 1.0}\n            }\n          }\n        },\n        \"fields\": \"bold,fontSize,foregroundColor\"\n      }\n    },\n    {\n      \"updateParagraphStyle\": {\n        \"range\": {\"startIndex\": 1, \"endIndex\": 21},\n        \"paragraphStyle\": {\n          \"alignment\": \"CENTER\"\n        },\n        \"fields\": \"alignment\"\n      }\n    }\n  ]\n}\n```\n\n### Exemplo 2\n\n**Input do usuário:**\n```\nTexto existente:\n- Índice 50-62: \"IMPORTANTE: \"\n- Índice 62-80: \"Leia com atenção\"\n\nFormatações:\n- \"IMPORTANTE: \" em vermelho e negrito\n- \"Leia com atenção\" sem formatação especial\n```\n\n**Seu output (JSON puro, sem marcadores):**\n```json\n{\n  \"requests\": [\n    {\n      \"updateTextStyle\": {\n        \"range\": {\"startIndex\": 50, \"endIndex\": 62},\n        \"textStyle\": {\n          \"bold\": true,\n          \"foregroundColor\": {\n            \"color\": {\n              \"rgbColor\": {\"red\": 1.0, \"green\": 0.0, \"blue\": 0.0}\n            }\n          }\n        },\n        \"fields\": \"bold,foregroundColor\"\n      }\n    }\n  ]\n}\n```\n\n### Exemplo 3\n\n**Input do usuário:**\n```\nTexto existente (índices 1-28):\n\"Esta é uma nota importante.\\n\"\n\nFormatações:\n- Borda esquerda azul de 4pt\n- Fundo cinza claro\n- Recuo de 20pt\n- Itálico\n```\n\n**Seu output (JSON puro, sem marcadores):**\n```json\n{\n  \"requests\": [\n    {\n      \"updateTextStyle\": {\n        \"range\": {\"startIndex\": 1, \"endIndex\": 28},\n        \"textStyle\": {\n          \"italic\": true\n        },\n        \"fields\": \"italic\"\n      }\n    },\n    {\n      \"updateParagraphStyle\": {\n        \"range\": {\"startIndex\": 1, \"endIndex\": 28},\n        \"paragraphStyle\": {\n          \"borderLeft\": {\n            \"color\": {\n              \"color\": {\n                \"rgbColor\": {\"red\": 0.0, \"green\": 0.0, \"blue\": 1.0}\n              }\n            },\n            \"width\": {\"magnitude\": 4, \"unit\": \"PT\"},\n            \"dashStyle\": \"SOLID\"\n          },\n          \"indentStart\": {\"magnitude\": 20, \"unit\": \"PT\"},\n          \"shading\": {\n            \"backgroundColor\": {\n              \"color\": {\n                \"rgbColor\": {\"red\": 0.8, \"green\": 0.8, \"blue\": 0.8}\n              }\n            }\n          }\n        },\n        \"fields\": \"borderLeft,indentStart,shading\"\n      }\n    }\n  ]\n}\n```\n\n## VALIDAÇÃO ANTES DE RESPONDER\n\nAntes de enviar sua resposta, verifique:\n\n✓ Fonte está usando \"weightedFontFamily\" (NUNCA usar \"fontFamily\" diretamente no textStyle)?\n✓ Todos os índices são >= 1?\n✓ `endIndex` > `startIndex` em todos os ranges?\n✓ Cores estão no formato rgbColor com valores 0.0-1.0?\n✓ Campo `fields` lista todas as propriedades definidas?\n✓ Valores de `magnitude` são numbers (não strings)?\n✓ Enums estão escritos corretamente (exemplo: \"CENTER\" não \"center\")?\n✓ O JSON está válido e bem formatado?\n✓ Você removeu TODOS os marcadores de código (```, ```json, etc.)?\n✓ Você não incluiu a palavra \"json\" ou \"JSON\" antes do objeto?\n✓ **Você NÃO usou nenhuma operação `insertText`?**\n\n## FORMATO DE RESPOSTA\n\nVocê DEVE responder APENAS com o JSON válido e puro, sem qualquer marcação de código, sem explicações adicionais antes ou depois.\n\n**ERRADO:**\n```json\n{\n  \"requests\": []\n}\n```\n\n**ERRADO:**\n```\n{\n  \"requests\": []\n}\n```\n\n**CORRETO:**\n{\n  \"requests\": []\n}\n\nO JSON deve estar pronto para ser enviado diretamente à API, começando com { e terminando com }.\n\n## CÁLCULO AUTOMÁTICO DE ÍNDICES\n\nQuando o usuário fornecer o texto completo do documento, você deve:\n\n1. Contar cada caractere incluindo espaços e `\\n`\n2. Identificar a posição exata de cada trecho que precisa ser formatado\n3. Calcular `startIndex` e `endIndex` corretos\n4. Aplicar as formatações solicitadas\n\n**Exemplo de cálculo:**\n\nTexto fornecido:\n```\n\"Título Principal\\nSubtítulo\\nTexto do parágrafo.\"\n```\n\nContagem:\n- \"Título Principal\" = índices 1-16\n- \"\\n\" = índice 17\n- \"Subtítulo\" = índices 18-26\n- \"\\n\" = índice 27\n- \"Texto do parágrafo.\" = índices 28-47\n\n###LEMBRETE\n\n**CRÍTICO - FONTE:**\nNUNCA use \"fontFamily\" diretamente dentro de \"textStyle\".\nSEMPRE use:\n\"weightedFontFamily\": {\n  \"fontFamily\": \"Nome da Fonte\",\n  \"weight\": 400\n}\nE no campo fields use \"weightedFontFamily\" (não \"fontFamily\").\n\nVocê gerará APENAS o JSON de formatação, sem operações de inserção de texto."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1712,
+        0
+      ],
+      "id": "681323b8-52db-4a58-98c0-98de7c228eb3",
+      "name": "jsonBodyFormat",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Darkay Gemini"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "getDocs",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1536,
+        0
+      ],
+      "id": "ea3f8304-a378-411c-a964-a65bb6403b99",
+      "name": "aggregate"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ $('copyFile').item.json.id }}",
+        "simple": false
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        0
+      ],
+      "id": "54935391-63c4-4613-b29b-69b35ba14055",
+      "name": "getIndex",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Docs Darkay"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $('copyFile').item.json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "{{texto}}",
+              "replaceText": "={{ $('createArray').item.json.objeto[0].conteudo }}",
+              "matchCase": true
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        0
+      ],
+      "id": "77a9c4d7-1821-4b27-adbb-30569c8be255",
+      "name": "updateDocs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Docs Darkay"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "writer",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        528,
+        0
+      ],
+      "id": "be09e20d-4fbb-4708-a953-73722e65f1f6",
+      "name": "shareFile",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Drive Darkay"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.docDriveId }}",
+          "mode": "id"
+        },
+        "name": "=",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        352,
+        0
+      ],
+      "id": "4a97357c-5203-4ed9-87f4-3349a8bec4a1",
+      "name": "copyFile",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Drive Darkay"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3-flash-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Texto a ser analisado:\n{{ $('variaveis').item.json.conteudo }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "systemMessage": "=<AgentPrompt>\n\n    <Contexto>\n        Você é um agente de processamento textual especializado em documentos financeiros.\n        O texto será recebido no campo \"conteudo\".\n        O conteúdo contém dados financeiros reais e não pode sofrer qualquer alteração semântica ou numérica.\n    </Contexto>\n\n    <DiretrizCritica>\n        É proibido:\n        - Alterar valores monetários.\n        - Alterar percentuais.\n        - Alterar datas.\n        - Alterar siglas financeiras.\n        - Reescrever frases.\n        - Resumir conteúdo.\n        - Interpretar informações.\n\n        Você deve apenas:\n        1) Remover poluição visual.\n        2) Estruturar semanticamente o conteúdo.\n    </DiretrizCritica>\n\n    <RegrasDeLimpeza>\n        Remover exclusivamente:\n            - Emojis\n            - Markdown (** ### #### --- etc.)\n            - Barras verticais de tabelas\n            - Separadores gráficos\n            - Asteriscos duplicados\n            - Setas (->)\n            - Caracteres decorativos\n\n        Manter integralmente:\n            - Todos os números\n            - Valores monetários\n            - Percentuais\n            - Datas\n            - Siglas\n            - Ordem original do conteúdo\n    </RegrasDeLimpeza>\n\n    <ClassificacaoEstrutural>\n        Classifique cada trecho como:\n\n        - \"Titulo\": Seções principais do documento.\n        - \"Subtitulo\": Divisões internas de seções.\n        - \"Corpo\": Conteúdo explicativo, analítico ou dados financeiros.\n\n        Regras:\n            - Não criar novos títulos.\n            - Não remover títulos existentes.\n            - Não alterar nomenclaturas.\n            - Manter ordem original.\n    </ClassificacaoEstrutural>\n\n    <FormatoDeSaida>\n        Retorne EXCLUSIVAMENTE um ARRAY JSON válido, contendo exatamente DOIS objetos, na seguinte estrutura:\n\n[\n    {\n        \"tipo\": \"texto_limpo\",\n        \"conteudo\": \"Texto completamente limpo aqui.\"\n    },\n    {\n        \"tipo\": \"estrutura\",\n        \"conteudo\": {\n            \"tipo_bloco\": \"Titulo | Subtitulo | Corpo\",\n            \"conteudo\": \"Texto estruturado completo aqui, já organizado internamente.\"\n        }\n    }\n]\n\n        Regras obrigatórias:\n        - O array deve conter apenas dois objetos.\n        - O primeiro objeto deve obrigatoriamente ser o texto limpo completo.\n        - O segundo objeto deve conter todos os blocos classificados.\n        - Não incluir explicações.\n        - Não incluir comentários.\n        - Não incluir texto fora do JSON.\n        - O segundo objeto deve conter APENAS DOIS itens em string. Sendo eles o \"Tipo_bloco\" que vai conter todos os titulos, subtitulos e etc separados com seus respectivos itens do texto. O segundo bloco deve ser o \"conteudo\".\n    </FormatoDeSaida>\n\n    <IntegridadeFinanceira>\n        A precisão dos dados financeiros é crítica.\n        Qualquer modificação numérica ou semântica é erro grave.\n    </IntegridadeFinanceira>\n\n</AgentPrompt>"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        704,
+        0
+      ],
+      "id": "00b6d8fe-29f3-4358-9cb9-9a224a75cee6",
+      "name": "textDocsFormat",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Darkay Gemini"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7bf767fa-6b65-4ab2-acfb-ed8661d321aa",
+              "name": "objeto",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1024,
+        0
+      ],
+      "id": "72fb8c55-b809-4491-9894-f2233390e037",
+      "name": "createArray"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "variaveis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "variaveis": {
+      "main": [
+        [
+          {
+            "node": "copyFile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extractBase64": {
+      "main": [
+        [
+          {
+            "node": "envioDocUazapi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "downloadFile": {
+      "main": [
+        [
+          {
+            "node": "extractBase64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "docsStyleFormat": {
+      "main": [
+        [
+          {
+            "node": "downloadFile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "requestFormat": {
+      "main": [
+        [
+          {
+            "node": "docsStyleFormat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "jsonBodyFormat": {
+      "main": [
+        [
+          {
+            "node": "requestFormat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "aggregate": {
+      "main": [
+        [
+          {
+            "node": "jsonBodyFormat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getIndex": {
+      "main": [
+        [
+          {
+            "node": "aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateDocs": {
+      "main": [
+        [
+          {
+            "node": "getIndex",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "shareFile": {
+      "main": [
+        [
+          {
+            "node": "textDocsFormat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "copyFile": {
+      "main": [
+        [
+          {
+            "node": "shareFile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "textDocsFormat": {
+      "main": [
+        [
+          {
+            "node": "createArray",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "createArray": {
+      "main": [
+        [
+          {
+            "node": "updateDocs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "{{VERSION_ID}}",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "{{INSTANCE_ID}}"
+  },
+  "id": "{{WORKFLOW_ID}}",
+  "tags": []
+}
