@@ -1,0 +1,284 @@
+{
+  "name": "Atendimento - Buffer",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "={{ $('Presets').item.json.redisListKey }}",
+        "messageData": "={{ $json.body.message }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1232,
+        160
+      ],
+      "id": "c17742ed-2b20-4acb-8050-3cd8dce79bd1",
+      "name": "Push Content",
+      "credentials": {
+        "redis": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Redis Darkay"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 12
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -960,
+        160
+      ],
+      "id": "05e36375-6449-4ccc-8be2-9b1fec406a6f",
+      "name": "Wait",
+      "webhookId": "{{WEBHOOK_ID}}"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5b7aa784-a6be-43fa-9615-94c935c6da16",
+              "name": "redisListKey",
+              "value": "=services:message-buffering-{{BUFFER_SERVICE_NAME}}:{{ $json.phoneNumber }}",
+              "type": "string"
+            },
+            {
+              "id": "4ddd3c79-204b-4c00-9d70-d3c0b46564a8",
+              "name": "body.message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1488,
+        160
+      ],
+      "id": "ff884adc-ba88-4088-a511-2b102f1bab44",
+      "name": "Presets"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "messages",
+        "key": "={{ $('Presets').item.json.redisListKey }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -672,
+        160
+      ],
+      "id": "61e7790b-6049-4349-8abb-56992daab0f0",
+      "name": "Get Last Content",
+      "credentials": {
+        "redis": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Redis Darkay"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ $('Presets').item.json.redisListKey }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        112,
+        128
+      ],
+      "id": "92ff5fd8-74ef-4c3e-8068-b48569af0f31",
+      "name": "Delete Buffered Messages",
+      "credentials": {
+        "redis": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Redis Darkay"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6897383d-a1db-4afe-adb5-258feb486e50",
+              "leftValue": "={{ $json.messages[0] }}",
+              "rightValue": "={{ $('Push Content').item.json.body.message }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "67c45397-8b5a-4151-be89-bdd12449554b",
+      "name": "Verificar se há nova mensagem",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -416,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "306c10eb-79c8-48a7-8aa8-76b6ebf14f89",
+              "name": "message",
+              "value": "={{ $json.messages.map((_, index, arr) => arr[arr.length - 1 - index]).join('\\n') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d95da22e-8102-4ffb-b7c4-d9580f62075b",
+      "name": "Capturar lista de mensagens",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -112,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "phoneNumber"
+            },
+            {
+              "name": "delayTimeMs"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1696,
+        160
+      ],
+      "id": "2a605505-6768-4674-9527-8e2f9eb1f16c",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Push Content": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get Last Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Presets": {
+      "main": [
+        [
+          {
+            "node": "Push Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Last Content": {
+      "main": [
+        [
+          {
+            "node": "Verificar se há nova mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar se há nova mensagem": {
+      "main": [
+        [
+          {
+            "node": "Capturar lista de mensagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Capturar lista de mensagens": {
+      "main": [
+        [
+          {
+            "node": "Delete Buffered Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Presets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "{{VERSION_ID}}",
+  "meta": {
+    "instanceId": "{{INSTANCE_ID}}"
+  },
+  "id": "{{WORKFLOW_ID}}",
+  "tags": []
+}
