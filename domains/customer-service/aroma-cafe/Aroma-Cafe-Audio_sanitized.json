@@ -1,0 +1,199 @@
+{
+  "name": "Aroma-Café-Audio",
+  "nodes": [
+    {
+      "parameters": {
+        "amount": 1.5
+      },
+      "id": "92ae9ba5-9b32-4170-abc6-89636e40b0b5",
+      "name": "waitSeconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        64
+      ],
+      "webhookId": "{{WEBHOOK_ID}}"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "68499771-a5fd-4ed3-8665-c0ba1ab70a46",
+      "name": "contentLoop",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "message",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "id": "84386c5d-f10b-4645-bcbd-64cb76d98c6e",
+      "name": "contentSplit",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        432,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "928f8c88-2bb4-40c3-8bd1-890d248b9365",
+              "name": "message",
+              "value": "={{ $json.message.split('\\n\\n').map(item => item.replace(/\\[|\\]/g, '')) }}",
+              "type": "array"
+            },
+            {
+              "id": "3196df60-b877-49a2-ab00-7437138cca28",
+              "name": "recipient",
+              "value": "={{ $json.phoneNumber }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "984da34a-a602-4b04-b106-69dcc2fc431c",
+      "name": "variaveisAmbiente"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "phoneNumber"
+            },
+            {
+              "name": "message"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0f26dd44-13fb-4876-b87f-8f1d579d724d",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "number": "={{ $json.recipient }}",
+        "text": "={{ $json.message.replace(/\\[NIN]/g, '').split('\\n\\n').join('\\n') }}"
+      },
+      "type": "n8n-nodes-uazapi.uazApi",
+      "typeVersion": 1,
+      "position": [
+        928,
+        64
+      ],
+      "id": "706f2630-e4bd-47c1-8e68-12953e428d0f",
+      "name": "Send text message",
+      "credentials": {
+        "uazApiApi": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "UazAPI Felipe"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "waitSeconds": {
+      "main": [
+        [
+          {
+            "node": "contentLoop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "contentLoop": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "contentSplit": {
+      "main": [
+        [
+          {
+            "node": "contentLoop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "variaveisAmbiente": {
+      "main": [
+        [
+          {
+            "node": "contentSplit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "variaveisAmbiente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send text message": {
+      "main": [
+        [
+          {
+            "node": "waitSeconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "fa4ee2cc-1cba-4b4e-930b-cf3a3d921bb7",
+  "meta": {
+    "instanceId": "{{INSTANCE_ID}}"
+  },
+  "id": "{{WORKFLOW_ID}}",
+  "tags": []
+}
