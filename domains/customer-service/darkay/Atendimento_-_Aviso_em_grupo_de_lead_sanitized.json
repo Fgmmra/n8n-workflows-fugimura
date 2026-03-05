@@ -1,0 +1,87 @@
+{
+  "name": "Atendimento - Aviso em grupo de lead",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "phone"
+            },
+            {
+              "name": "nome"
+            },
+            {
+              "name": "empresa"
+            },
+            {
+              "name": "dor"
+            },
+            {
+              "name": "interesseAutomatizar"
+            },
+            {
+              "name": "Disponibilidade"
+            },
+            {
+              "name": "Resumo"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "542893ec-57ab-4861-8791-f3c20cf94016",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "number": "{{WHATSAPP_GROUP_ID}}",
+        "text": "=Tive o contato de um lead agora!\nSegue as informações do mesmo\nNúmero: {{ $json.phone }}\nNome: {{ $json.nome }}\nEmpresa: {{ $json.empresa }}\nDor da empresa: {{ $json.dor }}\nInteresse em automatizar: {{ $json.interesseAutomatizar }}\nDisponibilidade para uma call: {{ $json.Disponibilidade }}\n\nResumo geral da conversa:\n\n{{ $json.Resumo }}"
+      },
+      "type": "n8n-nodes-uazapi.uazApi",
+      "typeVersion": 1,
+      "position": [
+        192,
+        0
+      ],
+      "id": "acca4665-ce44-46fd-b39d-407a99069202",
+      "name": "Send text message",
+      "credentials": {
+        "uazApiApi": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "UazAPI Darkay atendimento"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Send text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "{{VERSION_ID}}",
+  "meta": {
+    "instanceId": "{{INSTANCE_ID}}"
+  },
+  "id": "{{WORKFLOW_ID}}",
+  "tags": []
+}
