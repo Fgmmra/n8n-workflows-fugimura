@@ -1,0 +1,152 @@
+{
+  "name": "Lixeira de Execuções",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "execution",
+        "operation": "delete",
+        "executionId": "={{ $json.id }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [592, 672],
+      "id": "85de4c1f-4596-4903-b102-9c568c4e1562",
+      "name": "Delete an execution"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtHour": 2
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [80, 672],
+      "id": "723c08b0-6df1-4715-a435-51e698842a93",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "resource": "execution",
+        "returnAll": true,
+        "filters": {
+          "status": "success"
+        },
+        "options": {
+          "activeWorkflows": false
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [336, 512],
+      "id": "f3f6cc7b-f89e-4d69-82e5-4804571b751f",
+      "name": "Get many executions Success"
+    },
+    {
+      "parameters": {
+        "resource": "execution",
+        "returnAll": true,
+        "filters": {
+          "status": "error"
+        },
+        "options": {
+          "activeWorkflows": false
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [336, 672],
+      "id": "3a3aa444-8464-4a8b-8bee-bc866ce89ef2",
+      "name": "Get many executions Error"
+    },
+    {
+      "parameters": {
+        "resource": "execution",
+        "returnAll": true,
+        "filters": {
+          "status": "waiting"
+        },
+        "options": {
+          "activeWorkflows": false
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [336, 832],
+      "id": "ea479743-ea05-4bcd-8e60-9c64d6821fff",
+      "name": "Get many executions Waiting"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-96, 672],
+      "id": "cbdd692c-fd12-489b-80d1-0e1ab599b2d7",
+      "name": "When clicking 'Execute workflow'"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          { "node": "Get many executions Success", "type": "main", "index": 0 },
+          { "node": "Get many executions Error", "type": "main", "index": 0 },
+          { "node": "Get many executions Waiting", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Get many executions Success": {
+      "main": [
+        [{ "node": "Delete an execution", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get many executions Error": {
+      "main": [
+        [{ "node": "Delete an execution", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get many executions Waiting": {
+      "main": [
+        [{ "node": "Delete an execution", "type": "main", "index": 0 }]
+      ]
+    },
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          { "node": "Get many executions Success", "type": "main", "index": 0 },
+          { "node": "Get many executions Error", "type": "main", "index": 0 },
+          { "node": "Get many executions Waiting", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "a5c1a116-633f-4647-aee2-1d17e00f197a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e14abecbeb88523dd432acda4b2bcec7caa30ea68d42bdb0b49a0bdd98b9ce8f"
+  },
+  "id": "cSX-5_PzOHs9_x1PHsvB7",
+  "tags": [
+    {
+      "updatedAt": "2026-01-15T22:37:13.378Z",
+      "createdAt": "2026-01-15T22:37:13.378Z",
+      "id": "F8ytKNqIzdHrjCm1",
+      "name": "N8N"
+    }
+  ]
+}
