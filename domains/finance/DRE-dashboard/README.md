@@ -8,9 +8,9 @@ Workflow n8n que sincroniza dados financeiros de uma planilha Google Sheets para
 
 | Arquivo | Descrição | Link |
 |---------|-----------|------|
-| `Atualização Dashboard financeiro.json` | Workflow n8n — importar diretamente | [📥 Baixar](https://raw.githubusercontent.com/seu-usuario/seu-repositorio/main/Atualização_Dashboard_financeiro.json) |
-| `script Planilha.js` | Macro Google Apps Script — colar no GAS | [📄 Ver arquivo](https://github.com/seu-usuario/seu-repositorio/blob/main/script_Planilha.js) |
-| `index.html` | Dashboard HTML — abrir no navegador | [📄 Ver arquivo](https://github.com/seu-usuario/seu-repositorio/blob/main/index.html) |
+| `Atualização Dashboard financeiro.json` | Workflow n8n — importar diretamente | [📥 Baixar](https://github.com/Fgmmra/n8n-workflows/edit/main/domains/finance/DRE-dashboard/Atualização_Dashboard_financeiro.json) |
+| `script Planilha.js` | Macro Google Apps Script — colar no GAS | [📄 Ver arquivo](https://github.com/Fgmmra/n8n-workflows/edit/main/domains/finance/DRE-dashboard/script_Planilha.js) |
+| `index.html` | Dashboard HTML — abrir no navegador | [📄 Ver arquivo](https://github.com/Fgmmra/n8n-workflows/edit/main/domains/finance/DRE-dashboard/index.html) |
 
 ---
 
