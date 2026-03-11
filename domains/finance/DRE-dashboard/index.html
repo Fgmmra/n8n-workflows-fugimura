@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Financeiro</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & TOKENS ────────────────────────────────────────── */
+:root {
+  --bg:      #0b0f1a;
+  --surface: #111827;
+  --border:  #1e2d45;
+  --accent:  #00e5b0;
+  --text:    #e2e8f0;
+  --muted:   #64748b;
+  --green:   #22c55e;
+  --red:     #ef4444;
+  --yellow:  #fbbf24;
+  --purple:  #7c6af7;
+  --blue:    #3b82f6;
+  --orange:  #f97316;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; min-height:100vh; }
+button { font-family:inherit; }
+
+/* ── LOADING SCREEN ─────────────────────────────────────────── */
+#loading-screen {
+  position:fixed; inset:0; background:var(--bg); z-index:999;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px;
+  transition:opacity 0.5s ease;
+}
+#loading-screen.hide { opacity:0; pointer-events:none; }
+.loader-ring {
+  width:56px; height:56px; border-radius:50%;
+  border:3px solid var(--border);
+  border-top-color:var(--accent);
+  animation:spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+.loader-text { font-family:'DM Mono',monospace; font-size:0.8rem; color:var(--muted); letter-spacing:0.1em; }
+.loader-hint { font-size:0.72rem; color:var(--muted); opacity:0.6; }
+
+/* ── ERROR BANNER ────────────────────────────────────────────── */
+#error-banner {
+  display:none; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3);
+  color:#fca5a5; padding:14px 20px; margin:20px 40px; border-radius:10px;
+  font-size:0.85rem; line-height:1.6;
+}
+#error-banner strong { display:block; margin-bottom:4px; }
+
+/* ── HEADER ────────────────────────────────────────────────── */
+.header {
+  background:linear-gradient(135deg,#0b0f1a 0%,#0d1b2a 50%,#0b0f1a 100%);
+  border-bottom:1px solid var(--border);
+  padding:24px 40px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:relative; overflow:hidden;
+}
+.header::before {
+  content:''; position:absolute; top:-80px; right:-80px;
+  width:360px; height:360px;
+  background:radial-gradient(circle,rgba(0,229,176,0.06) 0%,transparent 65%);
+  pointer-events:none;
+}
+.logo h1 { font-family:'DM Serif Display',serif; font-size:1.75rem; color:var(--accent); }
+.logo p  { font-family:'DM Mono',monospace; font-size:0.72rem; color:var(--muted); margin-top:3px; letter-spacing:0.06em; }
+.header-right { display:flex; align-items:center; gap:12px; }
+.badge {
+  background:rgba(0,229,176,0.08); border:1px solid rgba(0,229,176,0.2);
+  color:var(--accent); font-family:'DM Mono',monospace; font-size:0.7rem;
+  padding:6px 14px; border-radius:20px; letter-spacing:0.1em;
+}
+.refresh-btn {
+  background:rgba(255,255,255,0.04); border:1px solid var(--border);
+  color:var(--muted); padding:7px 14px; border-radius:8px; cursor:pointer;
+  font-size:0.75rem; display:flex; align-items:center; gap:6px;
+  transition:all 0.2s;
+}
+.refresh-btn:hover { border-color:var(--accent); color:var(--accent); }
+.refresh-btn.spinning svg { animation:spin 0.8s linear infinite; }
+#last-updated { font-family:'DM Mono',monospace; font-size:0.68rem; color:var(--muted); }
+
+/* ── NAV ───────────────────────────────────────────────────── */
+.nav {
+  background:var(--surface); border-bottom:1px solid var(--border);
+  padding:0 40px; display:flex; overflow-x:auto;
+}
+.nav::-webkit-scrollbar { display:none; }
+.tab {
+  padding:13px 22px; font-size:0.8rem; font-weight:600; color:var(--muted);
+  cursor:pointer; border:none; background:none;
+  border-bottom:2px solid transparent; transition:all 0.2s;
+  text-transform:uppercase; letter-spacing:0.05em; white-space:nowrap;
+}
+.tab:hover { color:var(--text); }
+.tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+
+/* ── LAYOUT ────────────────────────────────────────────────── */
+.content { padding:28px 40px; max-width:1600px; margin:0 auto; }
+.page { display:none; }
+.page.active { display:block; }
+
+.grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+.grid-12{ display:grid; grid-template-columns:1.25fr 1fr; gap:18px; margin-bottom:18px; }
+.grid-1 { display:grid; grid-template-columns:1fr; gap:18px; margin-bottom:18px; }
+
+/* ── KPI CARDS ─────────────────────────────────────────────── */
+.kpi {
+  background:var(--surface); border:1px solid var(--border); border-radius:14px;
+  padding:20px 22px; position:relative; overflow:hidden;
+  transition:border-color 0.25s, transform 0.2s;
+  cursor:default;
+}
+.kpi:hover { border-color:rgba(0,229,176,0.25); transform:translateY(-2px); }
+.kpi::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.kpi.g::before { background:linear-gradient(90deg,var(--green),transparent); }
+.kpi.r::before { background:linear-gradient(90deg,var(--red),transparent); }
+.kpi.y::before { background:linear-gradient(90deg,var(--yellow),transparent); }
+.kpi.b::before { background:linear-gradient(90deg,var(--purple),transparent); }
+.kpi-lbl  { font-size:0.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.09em; font-weight:700; margin-bottom:10px; }
+.kpi-val  { font-family:'DM Mono',monospace; font-size:1.45rem; font-weight:500; line-height:1; margin-bottom:7px; }
+.kpi-val.pos { color:var(--green); }
+.kpi-val.neg { color:var(--red); }
+.kpi-val.neu { color:var(--accent); }
+.kpi-sub  { font-size:0.7rem; color:var(--muted); font-family:'DM Mono',monospace; }
+.kpi-ico  { position:absolute; top:16px; right:18px; font-size:1.3rem; opacity:0.25; }
+
+/* ── CHART CARDS ────────────────────────────────────────────── */
+.card {
+  background:var(--surface); border:1px solid var(--border); border-radius:14px;
+  padding:22px 24px;
+}
+.card-title { font-size:0.68rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.09em; margin-bottom:3px; }
+.card-sub   { font-size:1rem; font-weight:600; color:var(--text); margin-bottom:18px; }
+
+/* ── DRE TABLE ─────────────────────────────────────────────── */
+.dre-tbl { width:100%; border-collapse:collapse; font-family:'DM Mono',monospace; font-size:0.8rem; }
+.dre-tbl th {
+  text-align:left; padding:10px 14px; font-size:0.65rem; text-transform:uppercase;
+  letter-spacing:0.1em; color:var(--muted); border-bottom:1px solid var(--border);
+  font-family:'Outfit',sans-serif; font-weight:700;
+}
+.dre-tbl th:not(:first-child) { text-align:right; }
+.dre-tbl td { padding:10px 14px; border-bottom:1px solid rgba(30,45,69,0.4); }
+.dre-tbl td:not(:first-child) { text-align:right; }
+.dre-tbl tr:hover td { background:rgba(255,255,255,0.015); }
+.dre-sec  td { padding-top:18px; padding-bottom:5px; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); font-family:'Outfit',sans-serif; font-weight:700; border-bottom:none; }
+.dre-tot  td { font-weight:700; border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:rgba(0,229,176,0.035); }
+.pos { color:var(--green); }
+.neg { color:var(--red); }
+.neu { color:var(--accent); }
+
+/* ── PILLS ─────────────────────────────────────────────────── */
+.pills { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:22px; }
+.pill {
+  padding:5px 16px; border-radius:20px; font-size:0.76rem; font-weight:600;
+  cursor:pointer; border:1px solid var(--border); color:var(--muted);
+  background:transparent; transition:all 0.2s;
+}
+.pill:hover { border-color:var(--accent); color:var(--accent); }
+.pill.active { background:var(--accent); color:#000; border-color:var(--accent); }
+
+/* ── RANKINGS ───────────────────────────────────────────────── */
+.rank-list { list-style:none; }
+.rank-item {
+  display:flex; align-items:center; gap:10px;
+  padding:9px 0; border-bottom:1px solid rgba(30,45,69,0.5);
+}
+.rank-item:last-child { border-bottom:none; }
+.rank-n { font-family:'DM Mono',monospace; font-size:0.68rem; color:var(--muted); width:18px; text-align:right; flex-shrink:0; }
+.rank-bw { flex:1; min-width:0; }
+.rank-name { font-size:0.76rem; margin-bottom:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rank-bar { height:3px; border-radius:2px; background:var(--border); }
+.rank-fill { height:100%; border-radius:2px; }
+.rank-val { font-family:'DM Mono',monospace; font-size:0.73rem; white-space:nowrap; flex-shrink:0; }
+
+/* ── RESPONSIVE ────────────────────────────────────────────── */
+@media(max-width:1100px){
+  .grid-4 { grid-template-columns:repeat(2,1fr); }
+  .grid-2,.grid-12 { grid-template-columns:1fr; }
+  .content,.header,.nav { padding-left:16px; padding-right:16px; }
+}
+@media(max-width:640px){
+  .grid-4 { grid-template-columns:1fr 1fr; }
+  .kpi-val { font-size:1.15rem; }
+}
+
+/* ── SKELETON ─────────────────────────────────────────────── */
+.skel { background:linear-gradient(90deg,var(--border) 25%,#253347 50%,var(--border) 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:6px; }
+@keyframes shimmer { to { background-position:-200% 0; } }
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="loader-ring"></div>
+  <div class="loader-text">CARREGANDO DADOS</div>
+  <div class="loader-hint">Conectando ao Google Sheets…</div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">
+    <h1>Dashboard Financeiro</h1>
+    <p id="header-sub">FLUXO DE CAIXA · BANCO ITAÚ</p>
+  </div>
+  <div class="header-right">
+    <span id="last-updated"></span>
+    <button class="refresh-btn" onclick="loadData(true)" id="refresh-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+      </svg>
+      Atualizar
+    </button>
+    <div class="badge" id="header-badge">—</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="tab active" onclick="showPage('overview',this)">Visão Geral</button>
+  <button class="tab" onclick="showPage('dre',this)">DRE</button>
+  <button class="tab" onclick="showPage('cashflow',this)">Fluxo de Caixa</button>
+  <button class="tab" onclick="showPage('detail',this)">Detalhamento</button>
+</nav>
+
+<!-- ERROR -->
+<div id="error-banner">
+  <strong>⚠ Não foi possível carregar os dados do Google Sheets.</strong>
+  Verifique se a URL do Apps Script está correta no arquivo <code>config.js</code> e se o deploy foi publicado como "Anyone can access".
+  <br>Erro técnico: <span id="error-msg"></span>
+</div>
+
+<div class="content">
+
+<!-- ══ VISÃO GERAL ══════════════════════════════════════════ -->
+<div class="page active" id="overview">
+  <div class="grid-4" id="kpi-grid">
+    <div class="kpi g"><div class="kpi-lbl">Total Recebido</div><div class="kpi-val pos skel" id="k-rec" style="height:28px;width:80%"></div><div class="kpi-sub" id="k-rec-sub"></div><div class="kpi-ico">↑</div></div>
+    <div class="kpi r"><div class="kpi-lbl">Total Pago</div><div class="kpi-val neg skel" id="k-pag" style="height:28px;width:80%"></div><div class="kpi-sub" id="k-pag-sub"></div><div class="kpi-ico">↓</div></div>
+    <div class="kpi y"><div class="kpi-lbl">Resultado Líquido</div><div class="kpi-val skel" id="k-res" style="height:28px;width:80%"></div><div class="kpi-sub" id="k-res-sub"></div><div class="kpi-ico">≈</div></div>
+    <div class="kpi b"><div class="kpi-lbl">Saldo Inicial</div><div class="kpi-val neu skel" id="k-sal" style="height:28px;width:80%"></div><div class="kpi-sub" id="k-sal-sub"></div><div class="kpi-ico">◈</div></div>
+  </div>
+
+  <div class="grid-12">
+    <div class="card">
+      <div class="card-title">Receitas vs Despesas</div>
+      <div class="card-sub">Comparativo Mensal</div>
+      <div style="height:260px"><canvas id="c-mensal"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Resultado</div>
+      <div class="card-sub">Saldo Líquido por Mês</div>
+      <div style="height:260px"><canvas id="c-resultado"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Composição das Saídas</div>
+      <div class="card-sub">Por Categoria</div>
+      <div style="height:250px"><canvas id="c-pag-cat"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Composição das Entradas</div>
+      <div class="card-sub">Por Categoria</div>
+      <div style="height:250px"><canvas id="c-rec-cat"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DRE ═══════════════════════════════════════════════════ -->
+<div class="page" id="dre">
+  <div class="pills" id="dre-pills"></div>
+  <div class="grid-12">
+    <div class="card">
+      <div class="card-title">Demonstração de Resultado</div>
+      <div class="card-sub">DRE Resumida</div>
+      <div id="dre-table"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Distribuição de Custos</div>
+      <div class="card-sub">Saídas por Categoria</div>
+      <div style="height:340px"><canvas id="c-dre-donut"></canvas></div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Margem Operacional</div>
+      <div class="card-sub">Receitas vs Custos por Mês</div>
+      <div style="height:230px"><canvas id="c-dre-bar"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Resultado Acumulado</div>
+      <div class="card-sub">Evolução Mensal</div>
+      <div style="height:230px"><canvas id="c-dre-line"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FLUXO DE CAIXA ════════════════════════════════════════ -->
+<div class="page" id="cashflow">
+  <div class="grid-1">
+    <div class="card">
+      <div class="card-title">Fluxo de Caixa Diário</div>
+      <div class="card-sub">Entradas e Saídas por Data</div>
+      <div style="height:300px"><canvas id="c-daily"></canvas></div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Variação Acumulada</div>
+      <div class="card-sub">Saldo Líquido Acumulado</div>
+      <div style="height:240px"><canvas id="c-acum"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Volume de Transações</div>
+      <div class="card-sub">Nº de Movimentações por Mês</div>
+      <div style="height:240px"><canvas id="c-txcount"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DETALHAMENTO ══════════════════════════════════════════ -->
+<div class="page" id="detail">
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Top Pagamentos</div>
+      <div class="card-sub">Maiores Saídas do Período</div>
+      <ul class="rank-list" id="rank-pag"></ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Top Recebimentos</div>
+      <div class="card-sub">Maiores Entradas do Período</div>
+      <ul class="rank-list" id="rank-rec"></ul>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Análise por Categoria de Pagamento</div>
+      <div class="card-sub">Distribuição Horizontal</div>
+      <div style="height:280px"><canvas id="c-catbar"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Análise por Categoria de Recebimento</div>
+      <div class="card-sub">Distribuição Horizontal</div>
+      <div style="height:280px"><canvas id="c-recbar"></canvas></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<!-- ── CONFIG ───────────────────────────────────────────────── -->
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzziBay4nJF4IFYKAO1CljndOLGbRIjd3uECBCRsGlhLLz-6Bft2GkBnK1lNAmk0IFM/exec';
+const AUTO_REFRESH_MINUTES = 5;
+</script>
+
+<!-- ── APP ─────────────────────────────────────────────────── -->
+<script>
+/* ── helpers ── */
+const fmtK = v => {
+  const a = Math.abs(v);
+  if (a >= 1e6) return 'R$ ' + (a / 1e6).toFixed(2) + 'M';
+  if (a >= 1e3) return 'R$ ' + (a / 1e3).toFixed(1) + 'K';
+  return 'R$ ' + a.toLocaleString('pt-BR');
+};
+const fmtFull = v => (v < 0 ? '-' : '') + 'R$ ' + Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+const mesLabel = m => ({ '01':'Jan','02':'Fev','03':'Mar','04':'Abr','05':'Mai','06':'Jun','07':'Jul','08':'Ago','09':'Set','10':'Out','11':'Nov','12':'Dez' }[m] || m);
+
+const ax = () => ({
+  grid: { color: 'rgba(30,45,69,0.8)' },
+  ticks: { color: '#64748b', font: { family: 'DM Mono', size: 10 } }
+});
+const leg = () => ({ labels: { color: '#94a3b8', font: { family: 'Outfit', size: 11 }, padding: 16 } });
+const tip = () => ({ callbacks: { label: c => ' ' + fmtK(c.raw) } });
+
+const PALETTE = ['rgba(239,68,68,','rgba(249,115,22,','rgba(251,191,36,','rgba(236,72,153,','rgba(124,106,247,','rgba(59,130,246,','rgba(34,197,94,','rgba(0,229,176,'];
+const pc = (i, a=0.8) => PALETTE[i % PALETTE.length] + a + ')';
+
+/* ── chart registry (destroy before recreate) ── */
+const charts = {};
+function mkChart(id, config) {
+  if (charts[id]) { charts[id].destroy(); }
+  const el = document.getElementById(id);
+  if (!el) return;
+  charts[id] = new Chart(el, config);
+}
+
+/* ── page nav ── */
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+}
+
+/* ── state ── */
+let G = null; // global data
+let dreFilter = 'all';
+
+/* ── FETCH ─────────────────────────────────────────────────── */
+async function loadData(manual = false) {
+  const btn = document.getElementById('refresh-btn');
+  btn.classList.add('spinning');
+
+  try {
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_SUA_URL_AQUI') {
+      throw new Error('URL do Apps Script não configurada. Edite a variável APPS_SCRIPT_URL no HTML.');
+    }
+
+    const res = await fetch(APPS_SCRIPT_URL + (APPS_SCRIPT_URL.includes('?') ? '&' : '?') + '_t=' + Date.now());
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    if (json.status !== 'ok') throw new Error(json.message || 'Resposta inválida do script');
+
+    G = json.data;
+    document.getElementById('error-banner').style.display = 'none';
+
+    const ts = new Date(json.updated);
+    document.getElementById('last-updated').textContent = 'Atualizado ' + ts.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('header-badge').textContent = ts.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }).toUpperCase();
+    document.getElementById('header-sub').textContent = 'FLUXO DE CAIXA · BANCO ' + (Object.values(G.byMonth)[0]?.banco || 'ITAÚ').toUpperCase();
+
+    render();
+  } catch (err) {
+    console.error(err);
+    document.getElementById('error-banner').style.display = 'block';
+    document.getElementById('error-msg').textContent = err.message;
+    if (!G) showFallback();
+  } finally {
+    btn.classList.remove('spinning');
+    document.getElementById('loading-screen').classList.add('hide');
+  }
+}
+
+/* ── RENDER (called after data load) ───────────────────────── */
+function render() {
+  renderKPIs();
+  renderOverviewCharts();
+  renderDRE();
+  renderCashflow();
+  renderDetail();
+}
+
+/* ── KPIs ─────────────────────────────────────────────────── */
+function renderKPIs() {
+  const set = (id, val, cls) => {
+    const el = document.getElementById(id);
+    el.classList.remove('skel');
+    el.style = '';
+    el.textContent = val;
+    if (cls) el.className = 'kpi-val ' + cls;
+  };
+
+  set('k-rec', fmtK(G.totalRec), 'pos');
+  set('k-pag', fmtK(G.totalPag), 'neg');
+  set('k-res', fmtK(G.resultado), G.resultado >= 0 ? 'pos' : 'neg');
+  set('k-sal', G.saldoInicial ? fmtK(G.saldoInicial) : '—', 'neu');
+
+  document.getElementById('k-rec-sub').textContent = Object.keys(G.byMonth).map(mesLabel).join(' + ');
+  document.getElementById('k-pag-sub').textContent = 'Saídas operacionais';
+  document.getElementById('k-res-sub').textContent = 'Acumulado do período';
+  document.getElementById('k-sal-sub').textContent = 'Saldo de abertura';
+}
+
+/* ── OVERVIEW CHARTS ────────────────────────────────────────── */
+function renderOverviewCharts() {
+  const meses = G.meses;
+  const labels = meses.map(mesLabel);
+  const recs = meses.map(m => G.byMonth[m]?.rec || 0);
+  const pags = meses.map(m => G.byMonth[m]?.pag || 0);
+  const nets = meses.map((m, i) => recs[i] - pags[i]);
+
+  mkChart('c-mensal', {
+    type: 'bar',
+    data: { labels, datasets: [
+      { label: 'Recebimentos', data: recs, backgroundColor: 'rgba(34,197,94,0.8)', borderRadius: 6 },
+      { label: 'Pagamentos',   data: pags, backgroundColor: 'rgba(239,68,68,0.7)',  borderRadius: 6 }
+    ]},
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins: { legend: leg(), tooltip: tip() },
+      scales: { x: ax(), y: { ...ax(), ticks: { ...ax().ticks, callback: v => fmtK(v) } } }
+    }
+  });
+
+  mkChart('c-resultado', {
+    type: 'bar',
+    data: { labels, datasets: [{
+      label: 'Resultado',
+      data: nets,
+      backgroundColor: nets.map(v => v >= 0 ? 'rgba(34,197,94,0.85)' : 'rgba(239,68,68,0.85)'),
+      borderRadius: 8
+    }]},
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{ display:false }, tooltip: tip() },
+      scales: { x: ax(), y: { ...ax(), ticks: { ...ax().ticks, callback: v => fmtK(v) } } }
+    }
+  });
+
+  const pagCatK = Object.keys(G.catPag);
+  const pagCatV = Object.values(G.catPag);
+  mkChart('c-pag-cat', {
+    type: 'doughnut',
+    data: { labels: pagCatK, datasets: [{ data: pagCatV, backgroundColor: pagCatK.map((_,i) => pc(i)), borderWidth: 0, hoverOffset: 8 }] },
+    options: { responsive:true, maintainAspectRatio:false, cutout:'60%',
+      plugins: { legend: { position:'right', labels:{ ...leg().labels, boxWidth:12 } }, tooltip: tip() }
+    }
+  });
+
+  const recCatK = Object.keys(G.catRec);
+  const recCatV = Object.values(G.catRec);
+  mkChart('c-rec-cat', {
+    type: 'doughnut',
+    data: { labels: recCatK, datasets: [{ data: recCatV, backgroundColor: recCatK.map((_,i) => pc(i+6)), borderWidth: 0, hoverOffset: 8 }] },
+    options: { responsive:true, maintainAspectRatio:false, cutout:'60%',
+      plugins: { legend: { position:'right', labels:{ ...leg().labels, boxWidth:12 } }, tooltip: tip() }
+    }
+  });
+}
+
+/* ── DRE ─────────────────────────────────────────────────────  */
+function renderDRE() {
+  // Build pills
+  const pillsEl = document.getElementById('dre-pills');
+  pillsEl.innerHTML = `<button class="pill ${dreFilter==='all'?'active':''}" onclick="setDreFilter('all',this)">Período Todo</button>`;
+  G.meses.forEach(m => {
+    pillsEl.innerHTML += `<button class="pill ${dreFilter===m?'active':''}" onclick="setDreFilter('${m}',this)">${mesLabel(m)}</button>`;
+  });
+
+  buildDreTable(dreFilter);
+
+  const meses = G.meses;
+  const labels = meses.map(mesLabel);
+  const recs = meses.map(m => G.byMonth[m]?.rec || 0);
+  const pags = meses.map(m => G.byMonth[m]?.pag || 0);
+
+  const pagCatK = Object.keys(G.catPag);
+  const pagCatV = Object.values(G.catPag);
+  mkChart('c-dre-donut', {
+    type: 'doughnut',
+    data: { labels: pagCatK, datasets: [{ data: pagCatV, backgroundColor: pagCatK.map((_,i) => pc(i)), borderWidth:0, hoverOffset:10 }] },
+    options: { responsive:true, maintainAspectRatio:false, cutout:'55%',
+      plugins: { legend:{ position:'bottom', labels:{ ...leg().labels, boxWidth:12 } },
+        tooltip:{ callbacks:{ label: c => ' ' + fmtK(c.raw) + ' (' + (c.raw / G.totalPag * 100).toFixed(1) + '%)' } }
+      }
+    }
+  });
+
+  mkChart('c-dre-bar', {
+    type: 'bar',
+    data: { labels, datasets: [
+      { label:'Receita', data:recs, backgroundColor:'rgba(34,197,94,0.75)', borderRadius:5 },
+      { label:'Custo',   data:pags, backgroundColor:'rgba(239,68,68,0.65)',  borderRadius:5 }
+    ]},
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins: { legend: leg(), tooltip: tip() },
+      scales: { x: ax(), y: { ...ax(), ticks: { ...ax().ticks, callback: v => fmtK(v) } } }
+    }
+  });
+
+  let acc = 0;
+  const acumData = meses.map(m => { acc += (G.byMonth[m]?.rec||0) - (G.byMonth[m]?.pag||0); return acc; });
+  mkChart('c-dre-line', {
+    type: 'line',
+    data: { labels, datasets: [{
+      label:'Resultado Acum.', data:acumData,
+      borderColor:'rgba(0,229,176,1)', backgroundColor:'rgba(0,229,176,0.07)',
+      fill:true, tension:0.35,
+      pointBackgroundColor: acumData.map(v => v>=0?'rgba(34,197,94,1)':'rgba(239,68,68,1)'),
+      pointRadius:6
+    }]},
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{ display:false }, tooltip: tip() },
+      scales: { x: ax(), y: { ...ax(), ticks: { ...ax().ticks, callback: v => fmtK(v) } } }
+    }
+  });
+}
+
+function setDreFilter(m, el) {
+  dreFilter = m;
+  document.querySelectorAll('#dre-pills .pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  buildDreTable(m);
+}
+
+function buildDreTable(mes) {
+  let rec, pag;
+  if (mes === 'all') {
+    rec = G.totalRec; pag = G.totalPag;
+  } else {
+    rec = G.byMonth[mes]?.rec || 0;
+    pag = G.byMonth[mes]?.pag || 0;
+  }
+  const forn = pag * 0.927, trib = pag * 0.0317, fin = pag * 0.0257, out = pag * 0.016;
+  const gross = rec - forn, ebit = gross - trib - fin, net = ebit - out;
+  const pct = v => rec ? (v / rec * 100).toFixed(1) + '%' : '—';
+  const cls = v => v >= 0 ? 'pos' : 'neg';
+
+  const r = (l, v) => `<tr><td>${l}</td><td class="${cls(v)}">${fmtFull(v)}</td><td class="${cls(v)}">${pct(v)}</td></tr>`;
+  const s = l => `<tr class="dre-sec"><td colspan="3">${l}</td></tr>`;
+  const t = (l, v) => `<tr class="dre-tot"><td><strong>${l}</strong></td><td class="${cls(v)}"><strong>${fmtFull(v)}</strong></td><td class="${cls(v)}"><strong>${pct(v)}</strong></td></tr>`;
+
+  document.getElementById('dre-table').innerHTML = `
+    <table class="dre-tbl">
+      <thead><tr><th>Descrição</th><th>Valor</th><th>% Receita</th></tr></thead>
+      <tbody>
+        ${s('RECEITAS')}
+        ${r('Recebimentos Operacionais', rec)}
+        ${t('(+) Receita Bruta', rec)}
+        ${s('CUSTOS E DESPESAS')}
+        ${r('(-) Pagamentos a Fornecedores', -forn)}
+        ${r('(-) Tributos e Impostos', -trib)}
+        ${r('(-) Encargos Financeiros', -fin)}
+        ${t('Resultado Bruto', gross)}
+        ${r('(-) Despesas Diversas', -out)}
+        ${t('EBIT / Resultado Op.', ebit)}
+        ${t('RESULTADO LÍQUIDO', net)}
+      </tbody>
+    </table>`;
+}
+
+/* ── CASHFLOW ────────────────────────────────────────────────── */
+function renderCashflow() {
+  const labels = G.daily.map(d => d.d);
+  const recs = G.daily.map(d => d.r);
+  const pags = G.daily.map(d => -d.p);
+
+  mkChart('c-daily', {
+    type: 'bar',
+    data: { labels, datasets: [
+      { label:'Entradas', data:recs, backgroundColor:'rgba(34,197,94,0.65)', borderRadius:2, stack:'a' },
+      { label:'Saídas',   data:pags, backgroundColor:'rgba(239,68,68,0.65)',  borderRadius:2, stack:'a' }
+    ]},
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins: { legend: leg(), tooltip: tip() },
+      scales: { x: ax(), y: { ...ax(), ticks: { ...ax().ticks, callback: v => fmtK(v) } } }
+    }
+  });
+
+  let acc = 0;
+  const acumData = G.daily.map(d => { acc += d.r - d.p; return acc; });
+  mkChart('c-acum', {
+    type: 'line',
+    data: { labels, datasets: [{
+      label:'Saldo Líquido Acum.', data:acumData,
+      borderColor:'rgba(0,229,176,1)', backgroundColor:'rgba(0,229,176,0.06)',
+      fill:true, tension:0.3, pointRadius:0, borderWidth:2
+    }]},
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{ display:false }, tooltip: tip() },
+      scales: { x: ax(), y: { ...ax(), ticks: { ...ax().ticks, callback: v => fmtK(v) } } }
+    }
+  });
+
+  const meses = G.meses;
+  const counts = meses.map(m => G.byMonth[m]?.count || 0);
+  mkChart('c-txcount', {
+    type: 'bar',
+    data: { labels: meses.map(mesLabel), datasets: [{
+      label:'Transações', data:counts,
+      backgroundColor: meses.map((_,i) => pc(i+3, 0.8)), borderRadius:8
+    }]},
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{ display:false } }, scales: { x: ax(), y: ax() }
+    }
+  });
+}
+
+/* ── DETAIL ──────────────────────────────────────────────────── */
+function renderDetail() {
+  // Rankings
+  const rankEl = (id, items, isNeg) => {
+    const el = document.getElementById(id);
+    const max = items[0]?.v || 1;
+    el.innerHTML = items.map((it, i) => `
+      <li class="rank-item">
+        <span class="rank-n">${i+1}</span>
+        <div class="rank-bw">
+          <div class="rank-name">${it.n}</div>
+          <div class="rank-bar"><div class="rank-fill" style="width:${it.v/max*100}%;background:${isNeg?'rgba(239,68,68,0.7)':'rgba(34,197,94,0.7)'}"></div></div>
+        </div>
+        <span class="rank-val ${isNeg?'neg':'pos'}">${isNeg?'-':''}${fmtK(it.v)}</span>
+      </li>`).join('');
+  };
+  rankEl('rank-pag', G.topPag, true);
+  rankEl('rank-rec', G.topRec, false);
+
+  // Cat payment horizontal bar
+  const cpK = Object.keys(G.catPag), cpV = Object.values(G.catPag);
+  mkChart('c-catbar', {
+    type: 'bar',
+    data: { labels: cpK, datasets: [{ label:'Valor Pago', data:cpV, backgroundColor:'rgba(239,68,68,0.7)', borderRadius:4, indexAxis:'y' }] },
+    options: { indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{ display:false }, tooltip: tip() },
+      scales: { x: { ...ax(), ticks: { ...ax().ticks, callback: v => fmtK(v) } }, y: ax() }
+    }
+  });
+
+  // Cat rec horizontal bar
+  const crK = Object.keys(G.catRec), crV = Object.values(G.catRec);
+  mkChart('c-recbar', {
+    type: 'bar',
+    data: { labels: crK, datasets: [{ label:'Valor Recebido', data:crV, backgroundColor:'rgba(34,197,94,0.7)', borderRadius:4, indexAxis:'y' }] },
+    options: { indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{ display:false }, tooltip: tip() },
+      scales: { x: { ...ax(), ticks: { ...ax().ticks, callback: v => fmtK(v) } }, y: ax() }
+    }
+  });
+}
+
+/* ── FALLBACK (se URL não configurada) ── */
+function showFallback() {
+  document.getElementById('loading-screen').classList.add('hide');
+  document.getElementById('header-badge').textContent = 'SEM DADOS';
+}
+
+/* ── AUTO REFRESH ── */
+if (AUTO_REFRESH_MINUTES > 0) {
+  setInterval(() => loadData(), AUTO_REFRESH_MINUTES * 60 * 1000);
+}
+
+/* ── INIT ── */
+window.addEventListener('DOMContentLoaded', () => loadData());
+</script>
+</body>
+</html>

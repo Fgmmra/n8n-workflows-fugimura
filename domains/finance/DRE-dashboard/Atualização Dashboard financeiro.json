@@ -1,0 +1,331 @@
+{
+  "name": "Atualização Dashboard financeiro",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "id": "e43a180e-6ac7-4bf2-854f-c4a82ce82cd8",
+      "name": "A cada 5 minutos",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://script.google.com/macros/s/urldasuamacro",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "c0febc6b-70de-4e11-b08d-8af487c624eb",
+      "name": "Buscar Apps Script",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const json = $('Buscar Apps Script').first().json;\n\nif (!json || !json.data) {\n  throw new Error('Dados não encontrados no Apps Script');\n}\n\nif (json.status !== 'ok') {\n  throw new Error('Apps Script retornou erro: ' + (json.message || 'desconhecido'));\n}\n\nconst data = json.data;\nconst rows = [];\n\nfor (const d of (data.daily || [])) {\n  const mes = d.d.split('/')[1];\n  \n  if (d.r > 0) {\n    rows.push({\n      categoria: 'Recebimento Operacional',\n      banco: 'Itaú',\n      status: 'Recebimento',\n      valor: d.r,\n      data_mov: d.d,\n      mes: mes\n    });\n  }\n  \n  if (d.p > 0) {\n    rows.push({\n      categoria: 'Pagamento Operacional',\n      banco: 'Itaú',\n      status: 'Pagamento',\n      valor: -d.p,\n      data_mov: d.d,\n      mes: mes\n    });\n  }\n}\n\nreturn rows.map(r => ({ json: r }));"
+      },
+      "id": "dfaf3a50-ccc6-484d-b054-5dfa2cb28b3b",
+      "name": "Processar dados",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "TRUNCATE TABLE transacoes RESTART IDENTITY CASCADE;\nTRUNCATE TABLE saldo_inicial RESTART IDENTITY CASCADE;",
+        "options": {}
+      },
+      "id": "2cd06e99-924c-426c-ad21-23dc07132730",
+      "name": "Limpar tabelas",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        432,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Baj1vNQBcSVa8Vvi",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "transacoes",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "categoria": "={{ $json.categoria }}",
+            "banco": "={{ $json.banco }}",
+            "status": "={{ $json.status }}",
+            "valor": "={{ $json.valor }}",
+            "data_mov": "={{ $json.data_mov }}",
+            "mes": "={{ $json.mes }}",
+            "id": 0
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "categoria",
+              "displayName": "categoria",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "banco",
+              "displayName": "banco",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "valor",
+              "displayName": "valor",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "data_mov",
+              "displayName": "data_mov",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "mes",
+              "displayName": "mes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "31b74034-f63c-462d-8236-68c06e7785c0",
+      "name": "Inserir transações",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        864,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Baj1vNQBcSVa8Vvi",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO sync_log (status, rows_synced) VALUES ('success', (SELECT COUNT(*) FROM transacoes));",
+        "options": {}
+      },
+      "id": "d9669e6b-9bad-426a-b9c1-6aa5fabb7fef",
+      "name": "Registrar sucesso",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        1072,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Baj1vNQBcSVa8Vvi",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO sync_log (status, error_msg) VALUES ('error', '{{ $json.message }}');",
+        "options": {}
+      },
+      "id": "2d65d25a-713e-4bf6-ac91-bb5b98fe20d8",
+      "name": "Registrar erro",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        224,
+        -208
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "Baj1vNQBcSVa8Vvi",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "6b423905-ab1b-4384-bb7c-a53ced496b10",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        16,
+        -208
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "A cada 5 minutos": {
+      "main": [
+        [
+          {
+            "node": "Buscar Apps Script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Apps Script": {
+      "main": [
+        [
+          {
+            "node": "Limpar tabelas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpar tabelas": {
+      "main": [
+        [
+          {
+            "node": "Processar dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar dados": {
+      "main": [
+        [
+          {
+            "node": "Inserir transações",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inserir transações": {
+      "main": [
+        [
+          {
+            "node": "Registrar sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Registrar erro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "f531734b-bcb6-42b7-8228-46036d9c84af",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e14abecbeb88523dd432acda4b2bcec7caa30ea68d42bdb0b49a0bdd98b9ce8f"
+  },
+  "id": "qdDsAtglGspFZlVO",
+  "tags": []
+}
