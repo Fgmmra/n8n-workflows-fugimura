@@ -1,0 +1,1204 @@
+{
+  "name": "clickup",
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "getAll",
+        "team": "9007062279",
+        "space": "90171179562",
+        "folder": "90172680704",
+        "list": "901705416536",
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        -272
+      ],
+      "id": "45f8481b-7ccb-409e-88dd-0763aa8ae93d",
+      "name": "Get many tasks",
+      "credentials": {
+        "clickUpOAuth2Api": {
+          "id": "4hs8v4nEndp9mKiM",
+          "name": "ClickUp BMidia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eb04a820-6879-4889-ac0f-428b46f33b07",
+              "name": "=nomeClinte",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "897287ab-4251-42fd-82d9-2bb30ad5581c",
+              "name": "telefone",
+              "value": "={{ $('Code in JavaScript').item.json.telefone.replace(/\\D/g, '') }}",
+              "type": "string"
+            },
+            {
+              "id": "056f2151-d8bc-40fb-9684-4a42349d59fe",
+              "name": "contrato",
+              "value": "={{ $json.status.status }}",
+              "type": "string"
+            },
+            {
+              "id": "6505f498-0698-41c0-b787-7d47a1537ab2",
+              "name": "instancia",
+              "value": "leo",
+              "type": "string"
+            },
+            {
+              "id": "bea93d30-abd7-468e-a2c2-51e20619ab8f",
+              "name": "taskId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        -272
+      ],
+      "id": "de392054-9004-41db-b8cd-5c21f2a16d9c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $('Get a task1').item.json.name }} - IMPLEMENTAÇÃO",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "root",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1712,
+        -496
+      ],
+      "id": "f0db8ae8-f30f-46e0-b82a-3a3e041252bb",
+      "name": "Create folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PrYiktfHkseQQXmy",
+          "name": "Caio API Drive"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst results = [];\n\n// Regex para detectar telefone internacional BR\nconst phoneRegex = /\\+\\d{1,3}\\s?\\d{2}\\s?\\d{4,5}\\s?\\d{4}/;\n\nfor (const item of items) {\n  const json = item.json;\n\n  let telefone = null;\n  let gestorField = null;\n\n  // Verifica se custom_fields existe\n  if (Array.isArray(json.custom_fields)) {\n\n    for (const field of json.custom_fields) {\n\n      // 1️⃣ Detecta o campo Gestor\n      if (\n        field.name === \"Gestor \" &&\n        field.type === \"users\"\n      ) {\n        gestorField = field;\n      }\n\n      // 2️⃣ Detecta telefone pelo PADRÃO\n      if (field.value && typeof field.value === 'string') {\n        const match = field.value.match(phoneRegex);\n        if (match) {\n          telefone = match[0];\n        }\n      }\n    }\n  }\n\n  const hasNoGestor =\n    !gestorField ||\n    !gestorField.value ||\n    !Array.isArray(gestorField.value) ||\n    gestorField.value.length === 0;\n\n  // Só retorna tarefas sem gestor\n  if (hasNoGestor) {\n    results.push({\n      json: {\n        task_id: json.id || 'N/A',\n        task_name: json.name || 'N/A',\n        telefone: telefone,\n        gestor: null,\n        reason: !gestorField\n          ? 'Campo Gestor não existe'\n          : 'Campo Gestor está vazio'\n      }\n    });\n  }\n}\n\nreturn results;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -192,
+        -272
+      ],
+      "id": "24f9ef54-9071-4847-9e27-5241ad4d284f",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "get",
+        "id": "={{ $json.task_id }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        -272
+      ],
+      "id": "be3b8689-ac69-47c5-8335-d7c816346c8e",
+      "name": "Get a task",
+      "credentials": {
+        "clickUpOAuth2Api": {
+          "id": "4hs8v4nEndp9mKiM",
+          "name": "ClickUp BMidia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Get a task1').item.json.status.status }}",
+                    "rightValue": "implementação",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "94c41518-14e2-40df-bd66-fc25bdb57a76"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "implementação"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fbdd0145-c3ad-43ea-825d-effd3cb98fa2",
+                    "leftValue": "={{ $('Get a task1').item.json.status.status }}",
+                    "rightValue": "cliente parceiro",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ClienteParceiro"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "612d31a8-0eb7-47b8-8867-a61285936de6",
+                    "leftValue": "={{ $('Get a task1').item.json.status.status }}",
+                    "rightValue": "clientes ativos",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ClienteAtivo"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1312,
+        -288
+      ],
+      "id": "211466ed-a861-48a5-8e23-9b8768a16418",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "resource": "groups-api",
+        "instanceName": "={{ $('Edit Fields').first().json.instancia }}",
+        "subject": "={{ $('Get a task1').item.json.name }} - IMPLEMENTAÇÃO - TRAFEGO PAGO",
+        "description": "=Descrição muito criativa para receber as pessoas nos grupos ✨",
+        "participants": "={{ $('só o telefon').item.json.telefone }}"
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        1904,
+        -688
+      ],
+      "id": "6f24e16d-d760-465a-a3e5-1e9a0dc6c6f0",
+      "name": "Criar grupo IMPLEM",
+      "credentials": {
+        "evolutionApi": {
+          "id": "nWGoTCIr8RQoRspa",
+          "name": "Evo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "groups-api",
+        "instanceName": "={{ $('Edit Fields').first().json.instancia }}",
+        "subject": "={{ $('Get a task1').item.json.name }} - TRAFEGO PAGO",
+        "description": "Descrição muito criativa para receber as pessoas nos grupos ✨",
+        "participants": "={{ $('só o telefon').item.json.telefone }}"
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        1904,
+        -272
+      ],
+      "id": "45c7e8ef-6ae8-4fb8-9509-04024ea7db63",
+      "name": "Criar grupo ATIVOS/PARCEIROS",
+      "credentials": {
+        "evolutionApi": {
+          "id": "nWGoTCIr8RQoRspa",
+          "name": "Evo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $('Get a task1').item.json.name }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "root",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1712,
+        272
+      ],
+      "id": "cfa699b7-2ff0-42bf-8992-2abd79cf20e8",
+      "name": "Create folder1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PrYiktfHkseQQXmy",
+          "name": "Caio API Drive"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "groups-api",
+        "operation": "fetch-invite-code",
+        "instanceName": "={{ $('Edit Fields').first().json.instancia }}",
+        "groupJid": "={{ $json.data.id }}"
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        -688
+      ],
+      "id": "122e4dca-535f-493b-9ded-5534c779b342",
+      "name": "Buscar link de convite",
+      "credentials": {
+        "evolutionApi": {
+          "id": "nWGoTCIr8RQoRspa",
+          "name": "Evo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('Edit Fields').first().json.instancia }}",
+        "remoteJid": "={{ $('só o telefon').item.json.telefone }}",
+        "messageText": "=Segue o link do grupo {{ $('Criar grupo IMPLEM').item.json.data.subject }}:\n\n{{ $json.data.inviteUrl }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2288,
+        -688
+      ],
+      "id": "5394bafe-ae74-4943-950e-be9cfbfa47c4",
+      "name": "Enviar texto1",
+      "credentials": {
+        "evolutionApi": {
+          "id": "nWGoTCIr8RQoRspa",
+          "name": "Evo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 3
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -768,
+        -272
+      ],
+      "id": "9a3446e9-fe6a-4f5e-813d-b27648e52ae8",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "4r51vPIsLzNgwl3q",
+          "mode": "list",
+          "cachedResultName": "clickup clients",
+          "cachedResultUrl": "/projects/PE3BIe5cmGeJvcGX/datatables/4r51vPIsLzNgwl3q"
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        512,
+        -272
+      ],
+      "id": "745bc9f2-29d4-4231-87bd-3b433898b95e",
+      "name": "clients"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pega os itens filtrados da API\nconst apiItems = $('Code in JavaScript').all();\n\n// Pega todos os itens da planilha\nconst dataItems = $('clients').all();\n\n// Cria um Set com os IDs (ou outro campo único) da planilha\nconst dataIds = new Set(dataItems.map(item => item.json.task_id)); // aqui está correto\n\n// Filtra apenas itens que NÃO estão na planilha\nconst newItems = apiItems.filter(item => !dataIds.has(item.json.task_id)); // AQUI CORRIGIR\n\nreturn newItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        -272
+      ],
+      "id": "e2495aa2-7d26-43ea-9615-dc667171538c",
+      "name": "filtro"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "get",
+        "id": "={{ $json.task_id }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        928,
+        -272
+      ],
+      "id": "b7e21f36-075f-4646-87c3-08bb2e41bb85",
+      "name": "Get a task1",
+      "credentials": {
+        "clickUpOAuth2Api": {
+          "id": "4hs8v4nEndp9mKiM",
+          "name": "ClickUp BMidia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1712,
+        -704
+      ],
+      "id": "4ca46743-e604-4d31-8e1e-9eb812bfbe28",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2624,
+        -688
+      ],
+      "id": "e6a03a7b-3026-40de-9d95-1e535125c154",
+      "name": "Wait",
+      "webhookId": "f35cf274-1ddd-43e4-aac1-e6dd6fd44b47"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "4r51vPIsLzNgwl3q",
+          "mode": "list",
+          "cachedResultName": "clickup clients",
+          "cachedResultUrl": "/projects/PE3BIe5cmGeJvcGX/datatables/4r51vPIsLzNgwl3q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "phone_number": "={{ $('só o telefon').item.json.telefone }}",
+            "task_id": "={{ $('Get a task1').item.json.id }}",
+            "Nome": "={{ $('Get a task1').item.json.name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "task_id",
+              "displayName": "task_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "phone_number",
+              "displayName": "phone_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2448,
+        -688
+      ],
+      "id": "5fe391c6-9a8a-4f2c-a0a3-fbbc94eeb6c9",
+      "name": "attClients",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "resource": "groups-api",
+        "operation": "fetch-invite-code",
+        "instanceName": "={{ $('Edit Fields').first().json.instancia }}",
+        "groupJid": "={{ $json.data.id }}"
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        -272
+      ],
+      "id": "47975a64-e53e-49ed-8e02-2227174ddb8f",
+      "name": "Buscar link de convite2",
+      "credentials": {
+        "evolutionApi": {
+          "id": "nWGoTCIr8RQoRspa",
+          "name": "Evo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('Edit Fields').first().json.instancia }}",
+        "remoteJid": "={{ $('só o telefon').item.json.telefone }}",
+        "messageText": "=Segue o link do grupo {{ $('Criar grupo ATIVOS/PARCEIROS').item.json.data.subject }}:\n\n{{ $json.data.inviteUrl }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2288,
+        -272
+      ],
+      "id": "cb98ce9e-20a4-4e60-bd63-c73f07a0feba",
+      "name": "Enviar texto3",
+      "credentials": {
+        "evolutionApi": {
+          "id": "nWGoTCIr8RQoRspa",
+          "name": "Evo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1712,
+        -288
+      ],
+      "id": "3131bde6-64f0-4fca-a02d-d5c11af19df0",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2624,
+        -272
+      ],
+      "id": "b43777e2-d2ee-467a-a2e1-3ff7ed59c158",
+      "name": "Wait1",
+      "webhookId": "f35cf274-1ddd-43e4-aac1-e6dd6fd44b47"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "4r51vPIsLzNgwl3q",
+          "mode": "list",
+          "cachedResultName": "clickup clients",
+          "cachedResultUrl": "/projects/PE3BIe5cmGeJvcGX/datatables/4r51vPIsLzNgwl3q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "phone_number": "={{ $('só o telefon').item.json.telefone }}",
+            "task_id": "={{ $('Get a task1').item.json.id }}",
+            "Nome": "={{ $('Get a task1').item.json.name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "task_id",
+              "displayName": "task_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "phone_number",
+              "displayName": "phone_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2448,
+        -272
+      ],
+      "id": "fe6176ce-81c4-4628-adcb-4fe28ee9f902",
+      "name": "attClients1",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "resource": "groups-api",
+        "instanceName": "={{ $('Edit Fields').first().json.instancia }}",
+        "subject": "={{ $('Get a task1').item.json.name }} - TRAFEGO PAGO",
+        "description": "Descrição muito criativa para receber as pessoas nos grupos ✨",
+        "participants": "={{ $('só o telefon').item.json.telefone }}"
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        1904,
+        80
+      ],
+      "id": "fc3d7c65-c9ff-47e0-8397-359eea81b68f",
+      "name": "Criar grupo ATIVOS/PARCEIROS1",
+      "credentials": {
+        "evolutionApi": {
+          "id": "nWGoTCIr8RQoRspa",
+          "name": "Evo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "groups-api",
+        "operation": "fetch-invite-code",
+        "instanceName": "={{ $('Edit Fields').first().json.instancia }}",
+        "groupJid": "={{ $json.data.id }}"
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        80
+      ],
+      "id": "4938dfe7-f0e0-4757-879a-96f94a0e2983",
+      "name": "Buscar link de convite3",
+      "credentials": {
+        "evolutionApi": {
+          "id": "nWGoTCIr8RQoRspa",
+          "name": "Evo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('Edit Fields').first().json.instancia }}",
+        "remoteJid": "={{ $('só o telefon').item.json.telefone }}",
+        "messageText": "=Segue o link do grupo {{ $('Criar grupo ATIVOS/PARCEIROS1').item.json.data.subject }}:\n\n{{ $json.data.inviteUrl }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2288,
+        80
+      ],
+      "id": "c53c0b3a-bb3a-45f8-b915-597d37d27ceb",
+      "name": "Enviar texto4",
+      "credentials": {
+        "evolutionApi": {
+          "id": "nWGoTCIr8RQoRspa",
+          "name": "Evo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1712,
+        64
+      ],
+      "id": "1adf57ff-b353-4dab-9a7e-7dd2f9ae4b4f",
+      "name": "Loop Over Items2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2624,
+        80
+      ],
+      "id": "fbc055c2-a134-4ee5-9db3-b8081f8ccc34",
+      "name": "Wait2",
+      "webhookId": "f35cf274-1ddd-43e4-aac1-e6dd6fd44b47"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "4r51vPIsLzNgwl3q",
+          "mode": "list",
+          "cachedResultName": "clickup clients",
+          "cachedResultUrl": "/projects/PE3BIe5cmGeJvcGX/datatables/4r51vPIsLzNgwl3q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "phone_number": "={{ $('só o telefon').item.json.telefone }}",
+            "task_id": "={{ $('Get a task1').item.json.id }}",
+            "Nome": "={{ $('Get a task1').item.json.name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "task_id",
+              "displayName": "task_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "phone_number",
+              "displayName": "phone_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2448,
+        80
+      ],
+      "id": "2c8c11fe-6fc7-4979-aa9a-30e16d612173",
+      "name": "attClients2",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst results = [];\n\n// Regex para identificar telefone brasileiro no formato +55 XX XXXXX XXXX\nconst phoneRegex = /\\+55\\s?\\d{2}\\s?\\d{4,5}\\s?\\d{4}/;\n\nfor (const item of items) {\n  const customFields = item.json.custom_fields || [];\n  let telefone = null;\n\n  for (const field of customFields) {\n    if (typeof field.value === 'string' && phoneRegex.test(field.value)) {\n      telefone = field.value.replace(/\\D/g, ''); // remove tudo que não é número\n      break;\n    }\n  }\n\n  results.push({\n    json: {\n      telefone\n    }\n  });\n}\n\nreturn results;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1088,
+        -272
+      ],
+      "id": "58396faf-a1cb-47f0-8eaa-ea154802f52e",
+      "name": "só o telefon"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get many tasks": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "clients",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Get a task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a task": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Create folder",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create folder1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create folder1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create folder": {
+      "main": [
+        []
+      ]
+    },
+    "Criar grupo IMPLEM": {
+      "main": [
+        [
+          {
+            "node": "Buscar link de convite",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar link de convite": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get many tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar grupo ATIVOS/PARCEIROS": {
+      "main": [
+        [
+          {
+            "node": "Buscar link de convite2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create folder1": {
+      "main": [
+        []
+      ]
+    },
+    "Enviar texto1": {
+      "main": [
+        [
+          {
+            "node": "attClients",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clients": {
+      "main": [
+        [
+          {
+            "node": "filtro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filtro": {
+      "main": [
+        [
+          {
+            "node": "Get a task1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a task1": {
+      "main": [
+        [
+          {
+            "node": "só o telefon",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Criar grupo IMPLEM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "attClients": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar link de convite2": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto3": {
+      "main": [
+        [
+          {
+            "node": "attClients1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Criar grupo ATIVOS/PARCEIROS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "attClients1": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar grupo ATIVOS/PARCEIROS1": {
+      "main": [
+        [
+          {
+            "node": "Buscar link de convite3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar link de convite3": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto4": {
+      "main": [
+        [
+          {
+            "node": "attClients2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Criar grupo ATIVOS/PARCEIROS1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "attClients2": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "só o telefon": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "694b1134-e87a-4400-bde2-9273631d68f9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0b5d3285714ff395f69eae940b15fb437ef56e4b4746cdeff1713d1a8edfbe84"
+  },
+  "id": "bnCW63wer3M6PfpC",
+  "tags": [
+    {
+      "updatedAt": "2025-11-17T18:42:48.870Z",
+      "createdAt": "2025-11-17T18:42:48.870Z",
+      "id": "F9wQ5zyYvvIdbgd0",
+      "name": "BMIDIA"
+    }
+  ]
+}
