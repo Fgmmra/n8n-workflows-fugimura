@@ -1,0 +1,1590 @@
+{
+  "name": "tamanhos",
+  "nodes": [
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tamanho }}",
+                    "rightValue": "30",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "99a16531-05cb-467e-b39a-f7dca655a83d"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "30"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3b2f14d3-7171-46ab-bafa-d1d7bf6fb457",
+                    "leftValue": "={{ $json.tamanho }}",
+                    "rightValue": "35",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "35"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ba01bd07-b50b-41a6-96e2-bdb257166d42",
+                    "leftValue": "={{ $json.tamanho }}",
+                    "rightValue": "40",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "40"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d339aeb2-b990-4276-a342-f3660186d81b",
+                    "leftValue": "={{ $json.tamanho }}",
+                    "rightValue": "45",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "45"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d5dd4153-661e-434b-8d69-61578e55fb8f",
+                    "leftValue": "={{ $json.tamanho }}",
+                    "rightValue": "50",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "50"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ef76e1eb-b2a2-423d-a2d6-fe7db09f0cc9",
+                    "leftValue": "={{ $json.tamanho }}",
+                    "rightValue": "55",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "55"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a7217b5b-3db1-47ce-b7a3-50b1ea6b766a",
+                    "leftValue": "={{ $json.tamanho }}",
+                    "rightValue": "60",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "60"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4b0bdf2f-91af-4420-99e5-664d4d1706dc",
+                    "leftValue": "={{ $json.tamanho }}",
+                    "rightValue": "65",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "65"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "21af9d12-3850-40ca-8b9d-962ccc96d9d1",
+                    "leftValue": "={{ $json.tamanho }}",
+                    "rightValue": "70",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "70"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -448,
+        528
+      ],
+      "name": "tipos de tamanho"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "operation": "send-image",
+        "instanceName": "={{ $('Formalizar').item.json.InstanceId }}",
+        "remoteJid": "={{ $('Formalizar').item.json.telefoneCliente }}",
+        "media": "={{ $json.data }}",
+        "caption": "Orçamento para essa medida é a partir de R$2500 (Utilizando 100 gramas como referencia).",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        528,
+        0
+      ],
+      "name": "Evolution API",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "{{GOOGLE_DRIVE_FILE_30_JPG_ID}}",
+          "mode": "list",
+          "cachedResultName": "{{GOOGLE_DRIVE_FILE_30_JPG_NAME}}",
+          "cachedResultUrl": "{{GOOGLE_DRIVE_FILE_30_JPG_URL}}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        176,
+        0
+      ],
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "{{CREDENTIAL_GOOGLE_DRIVE_ID}}",
+          "name": "Google Drive OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        352,
+        0
+      ],
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2b028bb9-de07-4197-98bc-d69adc91f065",
+              "name": "telefoneCliente",
+              "value": "={{ $json.phoneNumber }}",
+              "type": "string"
+            },
+            {
+              "id": "83a8097c-75fc-49c1-b277-c87b0825a785",
+              "name": "tamanho",
+              "value": "={{ $json.tamanho }}",
+              "type": "string"
+            },
+            {
+              "id": "755d531a-1b7a-4b97-8922-0d195a23ee32",
+              "name": "InstanceId",
+              "value": "={{ $json.InstanceId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Formalizar",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -672,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "817f12c4-7d2a-45bd-8c12-74ab0c196308",
+              "name": "response",
+              "value": "=A imagem com tamanho específico ja foi enviada! Siga normalmente com o fluxo de atendimento.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Resposta para o Agente",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "phoneNumber"
+            },
+            {
+              "name": "tamanho"
+            },
+            {
+              "name": "InstanceId"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -880,
+        640
+      ],
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $json.InstanceId }}",
+        "remoteJid": "={{ $json.telefoneCliente }}",
+        "messageText": "=Veja um exemplo de como ficaria com o tamanho que escolheu ✨",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "name": "Enviar texto",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "operation": "send-image",
+        "instanceName": "={{ $('Formalizar').item.json.InstanceId }}",
+        "remoteJid": "={{ $('Formalizar').item.json.telefoneCliente }}",
+        "media": "={{ $json.data }}",
+        "caption": "Orçamento para essa medida é a partir de R$2700 (Utilizando 100 gramas como referencia).",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        528,
+        160
+      ],
+      "name": "Evolution API1",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "{{GOOGLE_DRIVE_FILE_35_JPG_ID}}",
+          "mode": "list",
+          "cachedResultName": "{{GOOGLE_DRIVE_FILE_35_JPG_NAME}}",
+          "cachedResultUrl": "{{GOOGLE_DRIVE_FILE_35_JPG_URL}}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        176,
+        160
+      ],
+      "name": "Download file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "{{CREDENTIAL_GOOGLE_DRIVE_ID}}",
+          "name": "Google Drive OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        352,
+        160
+      ],
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $json.InstanceId }}",
+        "remoteJid": "={{ $json.telefoneCliente }}",
+        "messageText": "=Veja um exemplo de como ficaria com o tamanho que escolheu ✨",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        0,
+        160
+      ],
+      "name": "Enviar texto1",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "operation": "send-image",
+        "instanceName": "={{ $('Formalizar').item.json.InstanceId }}",
+        "remoteJid": "={{ $('Formalizar').item.json.telefoneCliente }}",
+        "media": "={{ $json.data }}",
+        "caption": "Orçamento para essa medida é a partir de R$2900 (Utilizando 100 gramas como referencia).",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        528,
+        320
+      ],
+      "name": "Evolution API2",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "{{GOOGLE_DRIVE_FILE_40_JPG_ID}}",
+          "mode": "list",
+          "cachedResultName": "{{GOOGLE_DRIVE_FILE_40_JPG_NAME}}",
+          "cachedResultUrl": "{{GOOGLE_DRIVE_FILE_40_JPG_URL}}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        176,
+        320
+      ],
+      "name": "Download file2",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "{{CREDENTIAL_GOOGLE_DRIVE_ID}}",
+          "name": "Google Drive OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        352,
+        320
+      ],
+      "name": "Extract from File2"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $json.InstanceId }}",
+        "remoteJid": "={{ $json.telefoneCliente }}",
+        "messageText": "=Veja um exemplo de como ficaria com o tamanho que escolheu ✨",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        0,
+        320
+      ],
+      "name": "Enviar texto2",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "operation": "send-image",
+        "instanceName": "={{ $('Formalizar').item.json.InstanceId }}",
+        "remoteJid": "={{ $('Formalizar').item.json.telefoneCliente }}",
+        "media": "={{ $json.data }}",
+        "caption": "Orçamento para essa medida é a partir de R$3000 (Utilizando 100 gramas como referencia).",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        528,
+        480
+      ],
+      "name": "Evolution API3",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "{{GOOGLE_DRIVE_FILE_45_JPG_ID}}",
+          "mode": "list",
+          "cachedResultName": "{{GOOGLE_DRIVE_FILE_45_JPG_NAME}}",
+          "cachedResultUrl": "{{GOOGLE_DRIVE_FILE_45_JPG_URL}}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        176,
+        480
+      ],
+      "name": "Download file3",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "{{CREDENTIAL_GOOGLE_DRIVE_ID}}",
+          "name": "Google Drive OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        352,
+        480
+      ],
+      "name": "Extract from File3"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $json.InstanceId }}",
+        "remoteJid": "={{ $json.telefoneCliente }}",
+        "messageText": "=Veja um exemplo de como ficaria com o tamanho que escolheu ✨",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        0,
+        480
+      ],
+      "name": "Enviar texto3",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "operation": "send-image",
+        "instanceName": "={{ $('Formalizar').item.json.InstanceId }}",
+        "remoteJid": "={{ $('Formalizar').item.json.telefoneCliente }}",
+        "media": "={{ $json.data }}",
+        "caption": "Orçamento para essa medida é a partir de R$3500 (Utilizando 100 gramas como referencia).",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        528,
+        640
+      ],
+      "name": "Evolution API4",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "{{GOOGLE_DRIVE_FILE_50_JPG_ID}}",
+          "mode": "list",
+          "cachedResultName": "{{GOOGLE_DRIVE_FILE_50_JPG_NAME}}",
+          "cachedResultUrl": "{{GOOGLE_DRIVE_FILE_50_JPG_URL}}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        176,
+        640
+      ],
+      "name": "Download file4",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "{{CREDENTIAL_GOOGLE_DRIVE_ID}}",
+          "name": "Google Drive OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        352,
+        640
+      ],
+      "name": "Extract from File4"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $json.InstanceId }}",
+        "remoteJid": "={{ $json.telefoneCliente }}",
+        "messageText": "=Veja um exemplo de como ficaria com o tamanho que escolheu ✨",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        0,
+        640
+      ],
+      "name": "Enviar texto4",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "operation": "send-image",
+        "instanceName": "={{ $('Formalizar').item.json.InstanceId }}",
+        "remoteJid": "={{ $('Formalizar').item.json.telefoneCliente }}",
+        "media": "={{ $json.data }}",
+        "caption": "Orçamento para essa medida é a partir de R$4000 (Utilizando 100 gramas como referencia).",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        528,
+        800
+      ],
+      "name": "Evolution API5",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "{{GOOGLE_DRIVE_FILE_55_JPG_ID}}",
+          "mode": "list",
+          "cachedResultName": "{{GOOGLE_DRIVE_FILE_55_JPG_NAME}}",
+          "cachedResultUrl": "{{GOOGLE_DRIVE_FILE_55_JPG_URL}}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        176,
+        800
+      ],
+      "name": "Download file5",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "{{CREDENTIAL_GOOGLE_DRIVE_ID}}",
+          "name": "Google Drive OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        352,
+        800
+      ],
+      "name": "Extract from File5"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $json.InstanceId }}",
+        "remoteJid": "={{ $json.telefoneCliente }}",
+        "messageText": "=Veja um exemplo de como ficaria com o tamanho que escolheu ✨",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        0,
+        800
+      ],
+      "name": "Enviar texto5",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "operation": "send-image",
+        "instanceName": "={{ $('Formalizar').item.json.InstanceId }}",
+        "remoteJid": "={{ $('Formalizar').item.json.telefoneCliente }}",
+        "media": "={{ $json.data }}",
+        "caption": "Orçamento para essa medida é a partir de R$4500 (Utilizando 100 gramas como referencia).",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        528,
+        960
+      ],
+      "name": "Evolution API6",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "{{GOOGLE_DRIVE_FILE_60_JPG_ID}}",
+          "mode": "list",
+          "cachedResultName": "{{GOOGLE_DRIVE_FILE_60_JPG_NAME}}",
+          "cachedResultUrl": "{{GOOGLE_DRIVE_FILE_60_JPG_URL}}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        176,
+        960
+      ],
+      "name": "Download file6",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "{{CREDENTIAL_GOOGLE_DRIVE_ID}}",
+          "name": "Google Drive OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        352,
+        960
+      ],
+      "name": "Extract from File6"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $json.InstanceId }}",
+        "remoteJid": "={{ $json.telefoneCliente }}",
+        "messageText": "=Veja um exemplo de como ficaria com o tamanho que escolheu ✨",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        0,
+        960
+      ],
+      "name": "Enviar texto6",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "operation": "send-image",
+        "instanceName": "={{ $('Formalizar').item.json.InstanceId }}",
+        "remoteJid": "={{ $('Formalizar').item.json.telefoneCliente }}",
+        "media": "={{ $json.data }}",
+        "caption": "Orçamento para essa medida é a partir de R$5200 (Utilizando 100 gramas como referencia).",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        528,
+        1120
+      ],
+      "name": "Evolution API7",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "{{GOOGLE_DRIVE_FILE_65_JPG_ID}}",
+          "mode": "list",
+          "cachedResultName": "{{GOOGLE_DRIVE_FILE_65_JPG_NAME}}",
+          "cachedResultUrl": "{{GOOGLE_DRIVE_FILE_65_JPG_URL}}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        176,
+        1120
+      ],
+      "name": "Download file7",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "{{CREDENTIAL_GOOGLE_DRIVE_ID}}",
+          "name": "Google Drive OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        352,
+        1120
+      ],
+      "name": "Extract from File7"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $json.InstanceId }}",
+        "remoteJid": "={{ $json.telefoneCliente }}",
+        "messageText": "=Veja um exemplo de como ficaria com o tamanho que escolheu ✨",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        0,
+        1120
+      ],
+      "name": "Enviar texto7",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "operation": "send-image",
+        "instanceName": "={{ $('Formalizar').item.json.InstanceId }}",
+        "remoteJid": "={{ $('Formalizar').item.json.telefoneCliente }}",
+        "media": "={{ $json.data }}",
+        "caption": "Orçamento para essa medida é a partir de R$6000 (Utilizando 100 gramas como referencia).",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        528,
+        1280
+      ],
+      "name": "Evolution API8",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "{{GOOGLE_DRIVE_FILE_70_JPG_ID}}",
+          "mode": "list",
+          "cachedResultName": "{{GOOGLE_DRIVE_FILE_70_JPG_NAME}}",
+          "cachedResultUrl": "{{GOOGLE_DRIVE_FILE_70_JPG_URL}}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        176,
+        1280
+      ],
+      "name": "Download file8",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "{{CREDENTIAL_GOOGLE_DRIVE_ID}}",
+          "name": "Google Drive OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        352,
+        1280
+      ],
+      "name": "Extract from File8"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $json.InstanceId }}",
+        "remoteJid": "={{ $json.telefoneCliente }}",
+        "messageText": "=Veja um exemplo de como ficaria com o tamanho que escolheu ✨",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        0,
+        1280
+      ],
+      "name": "Enviar texto8",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "tipos de tamanho": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar texto1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar texto2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar texto3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar texto4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar texto5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar texto6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar texto7",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar texto8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Evolution API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formalizar": {
+      "main": [
+        [
+          {
+            "node": "tipos de tamanho",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Formalizar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution API": {
+      "main": [
+        [
+          {
+            "node": "Resposta para o Agente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Evolution API1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto1": {
+      "main": [
+        [
+          {
+            "node": "Download file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file2": {
+      "main": [
+        [
+          {
+            "node": "Extract from File2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File2": {
+      "main": [
+        [
+          {
+            "node": "Evolution API2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto2": {
+      "main": [
+        [
+          {
+            "node": "Download file2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file3": {
+      "main": [
+        [
+          {
+            "node": "Extract from File3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File3": {
+      "main": [
+        [
+          {
+            "node": "Evolution API3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto3": {
+      "main": [
+        [
+          {
+            "node": "Download file3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file4": {
+      "main": [
+        [
+          {
+            "node": "Extract from File4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File4": {
+      "main": [
+        [
+          {
+            "node": "Evolution API4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto4": {
+      "main": [
+        [
+          {
+            "node": "Download file4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file5": {
+      "main": [
+        [
+          {
+            "node": "Extract from File5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File5": {
+      "main": [
+        [
+          {
+            "node": "Evolution API5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto5": {
+      "main": [
+        [
+          {
+            "node": "Download file5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file6": {
+      "main": [
+        [
+          {
+            "node": "Extract from File6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File6": {
+      "main": [
+        [
+          {
+            "node": "Evolution API6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto6": {
+      "main": [
+        [
+          {
+            "node": "Download file6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file7": {
+      "main": [
+        [
+          {
+            "node": "Extract from File7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File7": {
+      "main": [
+        [
+          {
+            "node": "Evolution API7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto7": {
+      "main": [
+        [
+          {
+            "node": "Download file7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file8": {
+      "main": [
+        [
+          {
+            "node": "Extract from File8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File8": {
+      "main": [
+        [
+          {
+            "node": "Evolution API8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto8": {
+      "main": [
+        [
+          {
+            "node": "Download file8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution API1": {
+      "main": [
+        [
+          {
+            "node": "Resposta para o Agente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution API2": {
+      "main": [
+        [
+          {
+            "node": "Resposta para o Agente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution API3": {
+      "main": [
+        [
+          {
+            "node": "Resposta para o Agente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution API4": {
+      "main": [
+        [
+          {
+            "node": "Resposta para o Agente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution API5": {
+      "main": [
+        [
+          {
+            "node": "Resposta para o Agente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution API6": {
+      "main": [
+        [
+          {
+            "node": "Resposta para o Agente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution API7": {
+      "main": [
+        [
+          {
+            "node": "Resposta para o Agente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution API8": {
+      "main": [
+        [
+          {
+            "node": "Resposta para o Agente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2025-11-17T21:06:00.609Z",
+      "createdAt": "2025-11-17T21:06:00.609Z",
+      "id": "kGwc0botGvM5yCeS",
+      "name": "tool"
+    },
+    {
+      "updatedAt": "2025-11-24T18:17:42.588Z",
+      "createdAt": "2025-11-24T18:17:42.588Z",
+      "id": "qltsTFsPFHXNQ7Lv",
+      "name": "TAB Megahair"
+    }
+  ]
+}

@@ -1,0 +1,1694 @@
+{
+  "name": "BOT Comercial tabmegahair",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "TAB",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -4400,
+        1696
+      ],
+      "webhookId": "{{WEBHOOK_ID}}"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "101c3ff7-e997-43bb-8e99-fe82746c5993",
+                    "leftValue": "={{ $('variaveisWebhook').item.json.type }}",
+                    "rightValue": "audioMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "38226af4-80fe-4155-9ceb-2379f44e29ed",
+                    "leftValue": "={{ $('variaveisWebhook').item.json.type }}",
+                    "rightValue": "conversation",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "1a4aae82-9d4c-4baa-8c14-14993bb2e88f",
+                    "leftValue": "={{ $('variaveisWebhook').item.json.type }}",
+                    "rightValue": "=imageMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "image"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "0c944306-9325-44f8-a9d2-8a8306373936",
+                    "leftValue": "={{ $('variaveisWebhook').item.json.type }}",
+                    "rightValue": "videoMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "video"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "43ff1b2c-1ad5-4231-89cd-e09b07a9d3be",
+                    "leftValue": "={{ $('variaveisWebhook').item.json.type }}",
+                    "rightValue": "documentMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "verificaTipoMensagem",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -3584,
+        1648
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "17694db0-6248-444f-afb9-ff7ed13996ef",
+              "name": "message",
+              "value": "={{ $json.candidates[0].content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "audioTranscrito",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        -2864,
+        1488
+      ],
+      "notesInFlow": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c6d219c2-6a5a-4189-ae38-915e61af2293",
+              "name": "message",
+              "value": "={{ $('variaveisWebhook').item.json.userMessage}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3168,
+        1664
+      ],
+      "name": "messageText"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "844268f9-a6ce-4824-a1e4-b6aa652c6374",
+              "name": "unificaMessage",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2656,
+        1664
+      ],
+      "name": "unificaMessage"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c6d219c2-6a5a-4189-ae38-915e61af2293",
+              "name": "message",
+              "value": "={{ $json.candidates[0].content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2864,
+        1824
+      ],
+      "name": "messageGemini"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "22c537ca-06e0-4a61-bcbc-6ef8034365d4",
+              "leftValue": "={{ $('variaveisWebhook').item.json.Telefone }}",
+              "rightValue": "{{ALLOWED_PHONE_1}}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "13fea8aa-a53a-4b8a-b866-54e42a7c2f81",
+              "leftValue": "={{ $('variaveisWebhook').item.json.Telefone }}",
+              "rightValue": "{{ALLOWED_PHONE_2}}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3792,
+        1712
+      ],
+      "name": "verificaContato"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash"
+        },
+        "text": "={{ $('variaveisWebhook').item.json.geminiPrompt1 }}",
+        "imageUrls": "={{$('variaveisWebhook').item.json.url}}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -3040,
+        1824
+      ],
+      "name": "Analyze image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "{{CREDENTIAL_GOOGLE_GEMINI_ID}}",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "document",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash"
+        },
+        "text": "={{ $('variaveisWebhook').item.json.geminiPrompt1 }}",
+        "documentUrls": "={{$('variaveisWebhook').item.json.url}}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -3296,
+        1824
+      ],
+      "name": "Analyze document",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "{{CREDENTIAL_GOOGLE_GEMINI_ID}}",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash"
+        },
+        "text": "={{ $('variaveisWebhook').item.json.geminiPrompt1 }}",
+        "videoUrls": "={{$('variaveisWebhook').item.json.url}}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -3168,
+        1824
+      ],
+      "name": "Analyze video",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "{{CREDENTIAL_GOOGLE_GEMINI_ID}}",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash"
+        },
+        "text": "={{$('variaveisWebhook').item.json.geminiPrompt2}}",
+        "audioUrls": "={{$('variaveisWebhook').item.json.url}}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -3168,
+        1488
+      ],
+      "name": "Analyze audio1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "{{CREDENTIAL_GOOGLE_GEMINI_ID}}",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ $('variaveisWebhook').item.json.Telefone }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -3872,
+        1456
+      ],
+      "name": "Delete",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "redis": {
+          "id": "{{CREDENTIAL_REDIS_ID}}",
+          "name": "Redis"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "33dd4fc0-904b-4977-bb9e-0345297d4cca",
+              "leftValue": "={{ $('Webhook').item.json.body.data.message.conversation }}",
+              "rightValue": "#sair",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "54142b29-e06d-4837-a3da-9bd01d4d2be1",
+              "leftValue": "={{ $('Webhook').item.json.body.data.message.conversation }}",
+              "rightValue": "#SAIR",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3984,
+        1696
+      ],
+      "name": "#sair",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('variaveisWebhook').item.json.instanceId }}",
+        "remoteJid": "={{ $('variaveisWebhook').item.json.Telefone }}",
+        "messageText": "Historico apagado com sucesso.",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        -3744,
+        1456
+      ],
+      "name": "Enviar texto1",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3ad0386d-8645-4292-8d08-410e6665a85b",
+              "name": "Telefone",
+              "value": "={{\n  $json.body?.conversation?.contact_inbox?.contact_id ||\n  (\n    $json.body?.data?.key?.remoteJid?.includes('@s.whatsapp.net')\n      ? $json.body?.data?.key?.remoteJid.split('@')[0]\n      : $json.body?.data?.key?.remoteJidAlt?.includes('@s.whatsapp.net')\n        ? $json.body?.data?.key?.remoteJidAlt.split('@')[0]\n        : null\n  )\n}}",
+              "type": "string"
+            },
+            {
+              "id": "7fb2d85d-7eed-4151-99e3-b21fa9bb9bc1",
+              "name": "url",
+              "value": "={{ $json.webhookUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "e811271d-6033-4b4a-ba5f-abf606fb9d12",
+              "name": "userMessage",
+              "value": "={{ $json.body.data.message.conversation }}",
+              "type": "string"
+            },
+            {
+              "id": "07c01d80-089b-408f-9104-52ae6615874e",
+              "name": "userName",
+              "value": "={{ $json.body.data.pushName }}",
+              "type": "string"
+            },
+            {
+              "id": "962af416-e7a4-4f01-85fa-fe0074cd47c2",
+              "name": "geminiPrompt1",
+              "value": "=<?xml version=\"1.0\" encoding=\"UTF-8\"?> <prompt_analise_conteudo>     <introducao>         <descricao>             O conteúdo que você vai receber pode ser três tipos de coisas diferentes: uma imagem, um video ou um documento, independente da extensão do arquivo.         </descricao>     </introducao>      <classificacao>         <regra>             Para cada caso você deve identificar em qual caso o item se encaixa da melhor maneira e responder conforme as ordens para cada respectivo tipo de classificação.         </regra>     </classificacao>      <tipos_conteudo>         <imagem>             <acao>                 Leia, entenda o que se passa na imagem e descreva brevemente o conteúdo dela.             </acao>         </imagem>          <video>             <acao>                 Observe e entenda o contexto dele, feito isso, explique sobre o que o video fala brevemente.             </acao>         </video>          <documento>             <acao>                 Leia todo o conteúdo e fale sobre o que se trata em detalhes.             </acao>         </documento>     </tipos_conteudo>      <ordens_obrigatorias>         <titulo>Ordens que devem ser seguidas a todo custo:</titulo>         <regra_1>Não use caracteres especiais</regra_1>         <regra_2>Não use jargões ou gírias</regra_2>         <regra_3>Seja detalhista</regra_3>         <regra_4>Seja breve e direto</regra_4>     </ordens_obrigatorias>      <formatacao_resposta>         <instrucao>             No inicio da sua mensagem, coloque exatamente: MENSAGEM DE ANALISE         </instrucao>     </formatacao_resposta> </prompt_analise_conteudo>",
+              "type": "string"
+            },
+            {
+              "id": "0cc65036-733e-40e9-89db-c71c5fcb8048",
+              "name": "geminiPrompt2",
+              "value": "=<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<prompt_transcricao_audio>\n    <instrucao_principal>\n        <descricao>\n            Transcreva o audio na exata lingua que ele está, não altere o idioma de forma alguma.\n        </descricao>\n    </instrucao_principal>\n\n    <regras_transcricao>\n        <regra_idioma>\n            <titulo>Preservação do idioma original</titulo>\n            <detalhes>\n                O áudio deve ser transcrito mantendo exatamente o idioma em que foi gravado, sem qualquer tipo de tradução ou alteração linguística.\n            </detalhes>\n        </regra_idioma>\n\n        <regra_fidelidade>\n            <titulo>Fidelidade ao conteúdo</titulo>\n            <detalhes>\n                A transcrição deve ser uma reprodução fiel do que foi falado, preservando palavras, expressões e estruturas gramaticais originais.\n            </detalhes>\n        </regra_fidelidade>\n\n        <regra_integridade>\n            <titulo>Não alteração</titulo>\n            <detalhes>\n                Não realizar correções, adaptações ou modificações no texto transcrito, mantendo a forma original da fala.\n            </detalhes>\n        </regra_integridade>\n    </regras_transcricao>\n\n    <processo_execucao>\n        <etapa_1>Escutar o áudio completo</etapa_1>\n        <etapa_2>Identificar o idioma falado</etapa_2>\n        <etapa_3>Transcrever palavra por palavra no idioma original</etapa_3>\n        <etapa_4>Revisar a transcrição para garantir fidelidade</etapa_4>\n    </processo_execucao>\n\n    <observacoes>\n        <nota>\n            Caso o áudio contenha múltiplos idiomas, cada segmento deve ser transcrito no idioma correspondente em que foi falado.\n        </nota>\n    </observacoes>\n</prompt_transcricao_audio>",
+              "type": "string"
+            },
+            {
+              "id": "63747143-b828-4f30-8765-bae055d9afcd",
+              "name": "type",
+              "value": "={{ $json.body.data.messageType }}",
+              "type": "string"
+            },
+            {
+              "id": "d0dd68b6-e826-4325-bead-e1f6aa9dda89",
+              "name": "instanceId",
+              "value": "={{ $json.body.instance }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4176,
+        1696
+      ],
+      "name": "variaveisWebhook",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -2288,
+        1872
+      ],
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "{{CREDENTIAL_GOOGLE_GEMINI_ID}}",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('variaveisWebhook').item.json.Telefone }}",
+        "contextWindowLength": 100
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        -2144,
+        1840
+      ],
+      "name": "Redis Chat Memory",
+      "credentials": {
+        "redis": {
+          "id": "{{CREDENTIAL_REDIS_ID}}",
+          "name": "Redis"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "{{WORKFLOW_GENERIC_TEXT_ID}}",
+          "mode": "list",
+          "cachedResultUrl": "{{WORKFLOW_GENERIC_TEXT_URL}}",
+          "cachedResultName": "generic-text"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "phoneNumber": "={{ $('variaveisWebhook').first().json.Telefone }}",
+            "Instance_id": "={{ $('variaveisWebhook').first().json.instanceId }}",
+            "message": "={{ $('Triagem').first().json.output }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "phoneNumber",
+              "displayName": "phoneNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "Instance_id",
+              "displayName": "Instance_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -1504,
+        1680
+      ],
+      "name": "Mensagem em texto"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "{{WORKFLOW_BUFFERING_NATHAN_ID}}",
+          "mode": "list",
+          "cachedResultUrl": "{{WORKFLOW_BUFFERING_NATHAN_URL}}",
+          "cachedResultName": "buffering NATHAN"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $json.unificaMessage }}",
+            "phoneNumber": "={{ $('variaveisWebhook').item.json.Telefone }}",
+            "delayTimeMs": "140000"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "phoneNumber",
+              "displayName": "phoneNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "delayTimeMs",
+              "displayName": "delayTimeMs",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -2400,
+        1664
+      ],
+      "name": "Buffering"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('unificaMessage').item.json.unificaMessage }}",
+        "options": {
+          "systemMessage": "=🎀 PERSONA DA ATENDENTE\n\nVocê é Paty, atendente humana do estúdio TAB Megahair.\nSeu papel é conversar de forma natural, acolhedora e super humana, tirando dúvidas, explicando o método TAB e acompanhando a cliente durante o atendimento.\n\nNunca fale que é robô ou IA.\nSempre se apresente e aja como humana.\n\nSeu tom deve ser gentil, simpático, profissional, e com leveza emocional — sempre mostrando segurança no que está falando.\n\n🎗️ OBJETIVO PRINCIPAL\n\nResponder dúvidas com base no FAQ abaixo.\n\nManter o papo fluindo naturalmente, sem parecer robotizado.\n\nSeguir o fluxo conversacional padrão sempre que fizer sentido.\n\nBuscar levar a cliente até a etapa final: marcar avaliação gratuita.\n\n🧠 REGRAS DE COMPORTAMENTO\n\nUse linguagem humana, simples e calorosa.\n\nDê respostas completas, mas naturais.\n\nNunca invente preços ou valores exatos.\n\nNão ofereça serviços que não existam.\n\nNão saia do tema cabelos, megahair, avaliação, métodos, dúvidas da cliente.\n\nSe a cliente perguntar algo fora do FAQ (ex.: clima, vida pessoal etc.), responda de maneira simpática e breve, depois retorne ao assunto do atendimento.\n\nSempre use variações naturais de frases. Nada de respostas robóticas repetidas.\n\n📜 FAQ OFICIAL (Use fielmente nas respostas)\n\nMétodos usados: Método TAB – técnica de fita adesiva, faixa feita pela própria equipe, cabelo de alta qualidade, aplicação personalizada.\n\nTrabalham com megahair? Sim, especialistas há mais de 10 anos.\n\nAlopecia pode usar megahair? Sim, e também oferecem terapia capilar.\n\nCliente teve má experiência anterior? Reforce que aqui prezam saúde capilar, técnica personalizada e peso correto das faixas.\n\nSobre preço mais alto: Justificar pela qualidade — cabelos brasileiros virgens, produtos importados, garantia, técnica segura que não causa queda.\n\nPrimeira vez colocando megahair? Explicar método e avaliação obrigatória.\n\nManutenção: 45 a 90 dias, depende do crescimento.\n\nPode entrar no mar? Pode, é impermeável.\n\nPode prender o cabelo? Pode, colocação estratégica.\n\n“Megahair faz cair cabelo?” Se mal feito, sim. No estúdio, não — técnica personalizada.\n\nPagamentos: até 10x sem juros; à vista 10% de desconto (pix ou dinheiro); aceita PIX, crédito, débito; não aceita cheque/boletos.\n\nCompram megahair? Não.\n\nValor do megahair? Depende do comprimento e gramas → somente avaliação define.\n\nFazem outros serviços? Sim — coloração, mechas, alisamentos.\n\nOrçamento aproximado: pedir fotos (frente e atrás) + tamanho desejado.\n\nPerucas/tops/tictac? Sim.\n\nLocalização: Capivari de Baixo. Em 2026 → frente ao shopping de Tubarão - SC.\n\nSó técnica fita adesiva? Porque é a única que preserva saúde capilar.\n\nAvaliação: gratuita, dura até 30 min.\nLink: https://calendly.com/tabmegahair/agendar-minha-avaliacao\n\nVocês compram cabelo?\nSim, compramos cabelos virgens (sem química) e acima de 40 cm.\nUsamos uma técnica de corte fio a fio, onde retiramos apenas o volume, nunca o comprimento.\nSe você se enquadra, por favor envie uma foto de trás e uma de frente para analisarmos.\n\nEu já tenho cabelo, vocês passam para a técnica de vocês?\nSim, é possível! Mas precisamos analisar a qualidade do cabelo antes.\nO valor da troca de técnica é cobrado por gramas, por isso é necessário pesar o cabelo.\n\nVocês vendem só o cabelo?\nSim, vendemos cabelos para todo o Brasil.\n\nVocês fazem manutencao de megahair?\nSim, realizamos manutencao de megahair na tecnica de fita adesiva, o valor é R$400\n\n📦 SECTION — PARAMETRIZAÇÃO DE VALORES (Contexto Interno)\n\n(Esta seção serve apenas para referência interna do assistente. Ele NÃO deve afirmar valores exatos para a cliente sem a avaliação. Deve usar os dados apenas como base quando a cliente pedir uma noção, sempre reforçando que o valor real só é definido na avaliação.)\n\n📏 Valores base por comprimento (cabelos a partir de):\n\n30 cm: R$ 2.500\n\n35 cm: R$ 2.700\n\n40 cm: R$ 2.900\n\n45 cm: R$ 3.000\n\n50 cm: R$ 3.500\n\n55 cm: R$ 4.000\n\n60 cm: R$ 4.500\n\n65 cm: R$ 5.200\n\n70 cm: R$ 6.000\n\nAcima de 70 cm: R$ 6.500\n\n⚖️ Referência geral para 100g:\n\nValor médio: variável conforme o comprimento acima (usar como noção interna)\n\n🛠 Serviços adicionais (valores iniciais):\n\nColocação: R$ 400\n\nMechas: a partir de R$ 350\n\nColoração/Tintura: a partir de R$ 160\n\nSelagem / progressiva / alisamento: a partir de R$ 250\n\n💳 Política de Pagamento — Após Avaliação:\n\nCaso a cliente opte por seguir com o megahair depois da avaliação:\n\nÉ cobrada uma taxa de reserva de R$ 500 via PIX.\n\nO restante é pago no dia da colocação.\n\n🆕 Regra de Entrada: Quando Iniciar (ou Não) o Fluxo Conversacional\n\nSe a primeira mensagem do cliente for uma pergunta direta ou pontual que não está relacionada com o início do fluxo (ex.: corte, compra de cabelo, manutenção, curso, localização, formas de pagamento, serviços avulsos), o assistente deve:\n\nResponder normalmente a dúvida usando o FAQ, de forma humana e completa\n\nNão iniciar o fluxo conversacional\n\nNão forçar perguntas como “Você já utilizou megahair alguma outra vez?”\n\nO fluxo conversacional padrão (saudação → nome → etc.) só deve ser iniciado quando:\n\nA pessoa chega sem pergunta específica (ex.: “Oi”, “Olá”, “Boa tarde”)\n\nA cliente fala algo relacionado diretamente ao megahair ou ao serviço principal de aplicação\n\nA cliente demonstra intenção de atendimento completo ou orçamento\n\nSe após tirar a dúvida inicial o cliente continuar a conversa com algo relacionado ao megahair, o assistente pode então retomar e seguir o fluxo normalmente a partir da etapa correspondente.\n\nJamais retomar o fluxo se a cliente não demonstrar interesse no assunto.\nO assistente deve se manter disponível, acolhedor e responsivo, sem pressionar.\n\n💬 FLUXO CONVERSACIONAL PADRÃO\n1. Saudação inicial\n\nAssim que a conversa começar, diga:\n\n“Olá, muito prazer eu sou a Paty, bem-vinda(o) à TAB Megahair! Nosso objetivo é realçar ainda mais a sua beleza sem nunca esquecer da sua saúde capilar.💕\nQual o seu nome, por gentileza?”\n\n2. Cliente fornece o nome\n\nResponda exatamente:\n\n“Muito prazer, [nome]! É uma alegria ter você aqui.😁\nVocê já utilizou megahair alguma outra vez?”\n\n3. Cliente responde SIM ou NÃO\n\nNesta etapa:\n\n⚠️ REGRA ABSOLUTA\n\nVocê deve responder SOMENTE a palavra:\n\n\"imagem_Modelo\"\n\n- Sem emojis\n\n- Sem pular linha, sem adicionar linha antes ou depois\n\n- Sem explicações\n\n- Sem texto adicional\n\n- Sem complementar com nada\n\n- Sem avançar o atendimento\n\n- Se você escrever QUALQUER outra coisa além disso, estará quebrando sua função.\n\n- Não repita, apenas responda \"imagem_Modelo\" uma unica vez.\n\n- Fique aguardando a próxima mensagem da cliente.\n\n4: Acione a tool 'tamanhos' \n\n5. Recebe a resposta retornada pela tool 'tamanhos'.\n\n6. Somente depois dessa etapa você pode continuar o fluxo.\n\nResponda:\n\n“Lembrando que esses valores podem variar na avaliação gratuita, que pode ser feita tanto presencialmente quanto online.\nVamos marcar um horário?⏱️\"\n\n7. Cliente responde SIM ou NÃO\n\n- Caso responda SIM - \nResponda:\n\n“Perfeito, abaixo segue o link, te aguardamos lá! 🎀”\n\nE envie o link:\n\nhttps://calendly.com/tabmegahair/agendar-minha-avaliacao\n\n- Caso responda NAO -\n\n\"Ficou alguma dúvida? Pode questionar, estou aqui para esclarecer o que puder. 😊\"\n\n🆕 Section — Fluxos Condicionais Específicos\n1) Manutenção de Megahair – Pergunta do Cliente\n\nCondição: Se o cliente perguntar “vocês fazem manutenção de megahair?” ou qualquer variação equivalente.\nResposta obrigatória:\n\"Sim, realizamos manutenção de megahair na técnica de fita adesiva, o valor é R$400. Você gostaria de agendar um horário?\"\n\nSe o cliente responder “sim”:\nResponder UNICAMENTE, EXATAMENTE, APENAS UMA VEZ:\n\"Perfeito alguém a equipe entrará em contato para mais informações em minutos!✨\"\n\n2) Cursos – Pergunta do Cliente\n\nCondição: Se o cliente perguntar “vocês têm algum curso?” ou qualquer variação equivalente.\nResposta obrigatória:\n\"Sim temos o curso Expert em Megahair presencial e online, nele ensinamos tudo o que você precisa saber e aprender sobre megahair. O curso online está R$497 e o presencial R$6000 podendo ser parcelado em 10x.\nVocê gostaria de mais informações?\"\n\nSe o cliente responder “sim”:\nResponder UNICAMENTE, EXATAMENTE, APENAS UMA VEZ:\n\"Perfeito alguém a equipe entrará em contato para mais informações em minutos!✨\"\n\n⚠️ REGRA DE CONTINUIDADE APÓS OS FLUXOS DE MANUTENÇÃO OU CURSOS\n\nApós o bot enviar a frase:\n\n\"Perfeito alguém a equipe entrará em contato para mais informações em minutos!✨\"\n\nEle deve seguir as regras abaixo:\n\nNão deve iniciar nenhum novo assunto por conta própria.\n\nNão deve tentar vender nada, retomar fluxo ou conduzir para avaliação.\n\nO bot deve permanecer disponível normalmente para responder qualquer dúvida posterior que o cliente enviar.\n\nSe o cliente fizer outra pergunta não relacionada, o bot responde normalmente seguindo o FAQ e o fluxo padrão.\n\nSe o cliente retomar o fluxo conversacional padrão, o bot deve continuar normalmente.\n\nSe o cliente perguntar novamente sobre manutenção ou curso, o fluxo dessas condicionais deve ser repetido.\n\nA única reação imediata permitida após a frase fixa é reforçar que a equipe já está cuidando (somente se o cliente escrever algo ligado ao mesmo assunto).\n\nExemplo correto:\n\nCliente: \"Obrigada, vou esperar então. Ah, e quanto tempo dura a manutenção?\"\n\nBot: resposta normal do FAQ → tudo ok.\n\nExemplo proibido:\n\nBot: “Aproveitando, posso agendar sua avaliação?” (sem o cliente pedir)\n\n🧭 IMPORTANTE\n\nSempre mantenha o papo humano, fluido e coerente.\n\nUse termos naturais, reações humanas, empatia real.\n\nAs respostas devem parecer de uma atendente profissional de salão — nunca uma máquina.\n\n🚫 REGRAS DE RESTRIÇÃO CONVERSACIONAL – NÃO QUEBRE O FLUXO\n\nVocê NUNCA deve pular etapas do fluxo.\n\nÉ proibido enviar o link da avaliação mais de uma vez na mesma conversa.\nApós enviá-lo pela primeira vez, esta deve ser a ÚNICA vez que o link aparece.\nSe a cliente pedir novamente, o assistente deve responder de forma humana que o link já foi enviado anteriormente, sem reenviar.\n\nVocê NUNCA deve iniciar a etapa seguinte sem receber a resposta necessária da cliente.\n\nNa etapa da resposta \"imagem_Modelo\", você NÃO pode continuar a conversa além de emitir exatamente o texto “imagem_Modelo”.\n\nNão explique, não antecipe, não oriente nada antes da hora.\n\nSomente avance quando a cliente realmente responder a etapa anterior.\n\nDar informações não confirmadas pela base de dados.\n\nMencionar que é um assistente virtual, sistema automatizado ou inteligência artificial."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -2208,
+        1664
+      ],
+      "name": "Triagem"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "364b203b-921c-421f-98ce-4abe9687a432",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "imagem_Modelo",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1856,
+        1664
+      ],
+      "name": "se for pra disparar a imagem"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "operation": "send-image",
+        "instanceName": "={{ $('variaveisWebhook').item.json.instanceId }}",
+        "remoteJid": "={{ $('variaveisWebhook').item.json.Telefone }}",
+        "media": "={{ $json.data }}",
+        "caption": "Por favor responder da maneira que esta descrito na foto 😊",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        -1136,
+        1168
+      ],
+      "name": "Evolution API1",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "{{GOOGLE_DRIVE_FILE_CABELOMODELO_JPG_ID}}",
+          "mode": "list",
+          "cachedResultName": "{{GOOGLE_DRIVE_FILE_CABELOMODELO_JPG_NAME}}",
+          "cachedResultUrl": "{{GOOGLE_DRIVE_FILE_CABELOMODELO_JPG_URL}}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1600,
+        1168
+      ],
+      "name": "Download file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "{{CREDENTIAL_GOOGLE_DRIVE_ID}}",
+          "name": "Google Drive OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -1424,
+        1168
+      ],
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('variaveisWebhook').item.json.instanceId }}",
+        "remoteJid": "={{ $('variaveisWebhook').item.json.Telefone }}",
+        "messageText": "=Vou te enviar os tamanhos que trabalhamos no nosso catálogo.\nVocê já tem alguma ideia do comprimento que gostaria?",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        -1744,
+        1168
+      ],
+      "name": "Enviar texto",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1280,
+        1168
+      ],
+      "name": "Wait",
+      "webhookId": "{{WEBHOOK_ID}}"
+    },
+    {
+      "parameters": {
+        "description": "Essa tool é utilizada para enviar uma imagem com o tamanho escolhido pela cliente.\nÉ primordial que aguarde o retorno da tool para dar andamento no fluxo de conversação do assistente.",
+        "workflowId": {
+          "__rl": true,
+          "value": "{{WORKFLOW_TAMANHOS_ID}}",
+          "mode": "list",
+          "cachedResultUrl": "{{WORKFLOW_TAMANHOS_URL}}",
+          "cachedResultName": "tamanhos"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "phoneNumber": "={{ $('variaveisWebhook').item.json.Telefone }}",
+            "InstanceId": "={{ $('variaveisWebhook').item.json.instanceId }}",
+            "tamanho": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('tamanho', `O tamanho que o cliente enviou, no formato cm(centímetros).`, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "phoneNumber",
+              "displayName": "phoneNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "tamanho",
+              "displayName": "tamanho",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "InstanceId",
+              "displayName": "InstanceId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -2016,
+        1888
+      ],
+      "name": "Call 'tamanhos'"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e9974e03-21c4-45bf-813c-30dbc22ed05b",
+              "name": "var_assistant",
+              "value": "={{ $json.output.match(/\\{[\\s\\S]*\\}/)?.[0] || null }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -784,
+        1376
+      ],
+      "name": "relatorio"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('variaveisWebhook').item.json.Telefone }}",
+        "contextWindowLength": 100
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        -992,
+        1568
+      ],
+      "name": "Redis Chat Memory1",
+      "credentials": {
+        "redis": {
+          "id": "{{CREDENTIAL_REDIS_ID}}",
+          "name": "Redis"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('variaveisWebhook').item.json.instanceId }}",
+        "remoteJid": "={{{{WHATSAPP_GROUP_JID}}}}",
+        "messageText": "=*📢 Atenção!*\n*👤 Nome:* {{ $json.var_assistant.nome }} \n*📞 WhatsApp:* {{ $('variaveisWebhook').item.json.Telefone }}\n*⭐ Tamanho escolhido:* {{ $json.var_assistant.tamanho }}\n*🕒 Recebido em:* {{ new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        -608,
+        1376
+      ],
+      "name": "Enviar para grupo",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1168,
+        1568
+      ],
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "{{CREDENTIAL_GOOGLE_GEMINI_ID}}",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data.message.conversation }}",
+        "options": {
+          "systemMessage": "=<post_processing_registration>\n<instruction> \nCom base na última interação com o usuário, gere um relatório em formato JSON.\n\n**REGRAS:**\n1. Preencha cada campo do JSON com a informação correspondente extraída da conversa.\n2. **NÃO INVENTE INFORMAÇÕES.** Se o dado não existir na conversa, deixe o campo vazio.\n3. Retorne **SOMENTE** o JSON, sem quaisquer marcações de código, textos adicionais ou quebras de linha \\n.\n</instruction> \n\n<json_template>\n{ \"nome\": \"{nome}\", \"tamanho\": \"{tamanho}\" }\n</json_template>\n\n<json_output>\n{ \"nome\": \"Kayna\", \"tamanho\": \"40cm\" }\n</json_output>\n</example>\n</post_processing_registration>\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1120,
+        1376
+      ],
+      "name": "enviaGrupo",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.data.message.conversation }}",
+                    "rightValue": "https://calendly.com/tabmegahair/agendar-minha-avaliacao",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "e796ea1b-3551-404c-a070-d746af21435c"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "avaliação"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "97d25bfa-9426-4d60-9d1c-cd442d79f0e3",
+                    "leftValue": "={{ $json.data.message.conversation }}",
+                    "rightValue": "to alguém a equipe entrará em contato para mais ",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "curso/manutenção"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -1344,
+        1680
+      ],
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('variaveisWebhook').item.json.Telefone }}",
+        "contextWindowLength": 100
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        -1008,
+        2096
+      ],
+      "name": "Redis Chat Memory2",
+      "credentials": {
+        "redis": {
+          "id": "{{CREDENTIAL_REDIS_ID}}",
+          "name": "Redis"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1184,
+        2096
+      ],
+      "name": "Google Gemini Chat Model4",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "{{CREDENTIAL_GOOGLE_GEMINI_ID}}",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data.message.conversation }}",
+        "options": {
+          "systemMessage": "=<post_processing_registration>\n<instruction> \nCom base na última interação com o usuário, gere um relatório em formato JSON.\n\n**REGRAS:**\n1. Preencha cada campo do JSON com a informação correspondente extraída da conversa.\n2. **NÃO INVENTE INFORMAÇÕES.** Se o dado não existir na conversa, deixe o campo vazio.\n3. Retorne **SOMENTE** o JSON, sem quaisquer marcações de código, textos adicionais ou quebras de linha \\n.\n</instruction> \n\n<json_template>\n{ \"nome\": \"{nome}\", \"demanda\": \"{demanad}\" }\n</json_template>\n\n<json_output>\n{ \"nome\": \"Kayna\", \"demanda\": \"curso\" }\n</json_output>\n</example>\n</post_processing_registration>\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1136,
+        1904
+      ],
+      "name": "enviaGrupo1",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e9974e03-21c4-45bf-813c-30dbc22ed05b",
+              "name": "var_assistant",
+              "value": "={{ $json.output.match(/\\{[\\s\\S]*\\}/)?.[0] || null }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -800,
+        1904
+      ],
+      "name": "relatorio1"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('variaveisWebhook').item.json.instanceId }}",
+        "remoteJid": "={{{{WHATSAPP_GROUP_JID}}}}",
+        "messageText": "=*📢 Atenção!*\n*👤 Nome:* {{ $json.var_assistant.nome }} \n*📞 WhatsApp:* {{ $('variaveisWebhook').item.json.Telefone }}\n*💼 Demanda:* {{ $json.var_assistant.demanda }}\n*🕒 Recebido em:* {{ new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        1904
+      ],
+      "name": "Enviar para grupo1",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Garantir que o output exista e seja string\nconst output = $json.output ?? \"\";\n\n// Sanitizar quebra de linha, espaços extras, unicode estranho etc.\nconst clean = output\n  .toString()\n  .trim()\n  .replace(/\\s+/g, \"\"); // REMOVE espaços, quebras e tabs indesejados\n\n// Retornar sempre o campo \"output\" limpo\nreturn [{ output: clean }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1968,
+        1440
+      ],
+      "name": "Code in JavaScript",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "chat-api",
+        "operation": "send-presence",
+        "instanceName": "={{ $('variaveisWebhook').item.json.instanceId }}",
+        "remoteJid": "={{ $('variaveisWebhook').item.json.Telefone }}"
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        -1680,
+        1680
+      ],
+      "name": "escrevendo...",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "variaveisWebhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "verificaTipoMensagem": {
+      "main": [
+        [
+          {
+            "node": "Analyze audio1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "messageText",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Analyze video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Analyze document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "audioTranscrito": {
+      "main": [
+        [
+          {
+            "node": "unificaMessage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "messageText": {
+      "main": [
+        [
+          {
+            "node": "unificaMessage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "unificaMessage": {
+      "main": [
+        [
+          {
+            "node": "Buffering",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "messageGemini": {
+      "main": [
+        [
+          {
+            "node": "unificaMessage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "verificaContato": {
+      "main": [
+        [
+          {
+            "node": "verificaTipoMensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "messageGemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze document": {
+      "main": [
+        [
+          {
+            "node": "messageGemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze video": {
+      "main": [
+        [
+          {
+            "node": "messageGemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze audio1": {
+      "main": [
+        [
+          {
+            "node": "audioTranscrito",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "#sair": {
+      "main": [
+        [
+          {
+            "node": "Delete",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "verificaContato",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "variaveisWebhook": {
+      "main": [
+        [
+          {
+            "node": "#sair",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Triagem",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Triagem",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buffering": {
+      "main": [
+        [
+          {
+            "node": "Triagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Triagem": {
+      "main": [
+        [
+          {
+            "node": "se for pra disparar a imagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mensagem em texto": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "se for pra disparar a imagem": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "escrevendo...",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution API1": {
+      "main": [
+        []
+      ]
+    },
+    "Download file1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto": {
+      "main": [
+        [
+          {
+            "node": "Download file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Evolution API1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'tamanhos'": {
+      "ai_tool": [
+        [
+          {
+            "node": "Triagem",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "relatorio": {
+      "main": [
+        [
+          {
+            "node": "Enviar para grupo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "enviaGrupo",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "enviaGrupo",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enviaGrupo": {
+      "main": [
+        [
+          {
+            "node": "relatorio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "enviaGrupo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "enviaGrupo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "enviaGrupo1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "enviaGrupo1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enviaGrupo1": {
+      "main": [
+        [
+          {
+            "node": "relatorio1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "relatorio1": {
+      "main": [
+        [
+          {
+            "node": "Enviar para grupo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        []
+      ]
+    },
+    "escrevendo...": {
+      "main": [
+        [
+          {
+            "node": "Mensagem em texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2025-11-24T18:17:42.588Z",
+      "createdAt": "2025-11-24T18:17:42.588Z",
+      "id": "qltsTFsPFHXNQ7Lv",
+      "name": "TAB Megahair"
+    }
+  ]
+}
