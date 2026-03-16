@@ -1,6 +1,6 @@
-# 🤖 Agaxtur — Agente de Atendimento via WhatsApp
+# 🤖 Agente de Atendimento via WhatsApp
 
-Sistema de atendimento conversacional para a Agaxtur, operando via **WhatsApp Oficial Meta** integrado ao **Chatwoot**. O agente recebe mensagens de clientes, processa múltiplos formatos de mídia, mantém contexto da conversa, registra dados de interesse em planilha e executa follow-ups automáticos com leads sem resposta.
+Sistema de atendimento conversacional, operando via **WhatsApp Oficial Meta** integrado ao **Chatwoot**. O agente recebe mensagens de clientes, processa múltiplos formatos de mídia, mantém contexto da conversa, registra dados de interesse em planilha e executa follow-ups automáticos com leads sem resposta.
 
 ---
 
