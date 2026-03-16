@@ -71,7 +71,7 @@ WhatsApp Oficial Meta
 
 ## 📋 Workflows
 
-### `Agaxtur V2 - Produção`
+### `Oficial_Meta + chatwoot`
 
 Workflow central do atendimento. Ativado por sinal paginado do Chatwoot a cada mensagem recebida.
 
@@ -107,7 +107,7 @@ Webhook (POST)
 
 ---
 
-### `Follow Up Agaxtur`
+### `Follow Up`
 
 Workflow de acompanhamento automático. Varre a fila de follow-ups e envia mensagens de reativação para leads sem resposta, exceto fins de semana.
 
