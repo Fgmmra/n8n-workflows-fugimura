@@ -1,0 +1,1563 @@
+{
+  "name": "mvp-v",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash"
+        },
+        "text": "=<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<prompt_transcricao_audio>\n    <instrucao_principal>\n        <descricao>\n            Transcreva o audio na exata lingua que ele está, não altere o idioma de forma alguma.\n        </descricao>\n    </instrucao_principal>\n\n<contexto>Caso seja citado alvarez e Marsal, entenda sempre entenda a ortografia como \"Alvarez & Marsal\"</contexto>\n\n    <regras_transcricao>\n        <regra_idioma>\n            <titulo>Preservação do idioma original</titulo>\n            <detalhes>\n                O áudio deve ser transcrito mantendo exatamente o idioma em que foi gravado, sem qualquer tipo de tradução ou alteração linguística.\n            </detalhes>\n        </regra_idioma>\n\n        <regra_fidelidade>\n            <titulo>Fidelidade ao conteúdo</titulo>\n            <detalhes>\n                A transcrição deve ser uma reprodução fiel do que foi falado, preservando palavras, expressões e estruturas gramaticais originais.\n            </detalhes>\n        </regra_fidelidade>\n\n        <regra_integridade>\n            <titulo>Não alteração</titulo>\n            <detalhes>\n                Não realizar correções, adaptações ou modificações no texto transcrito, mantendo a forma original da fala.\n            </detalhes>\n        </regra_integridade>\n    </regras_transcricao>\n\n    <processo_execucao>\n        <etapa_1>Escutar o áudio completo</etapa_1>\n        <etapa_2>Identificar o idioma falado</etapa_2>\n        <etapa_3>Transcrever palavra por palavra no idioma original</etapa_3>\n        <etapa_4>Revisar a transcrição para garantir fidelidade</etapa_4>\n    </processo_execucao>\n\n    <observacoes>\n        <nota>\n            Caso o áudio contenha múltiplos idiomas, cada segmento deve ser transcrito no idioma correspondente em que foi falado.\n        </nota>\n    </observacoes>\n</prompt_transcricao_audio>",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        304,
+        -64
+      ],
+      "name": "Analyze audio",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "{{CREDENTIAL_GOOGLE_GEMINI_ID}}",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "17694db0-6248-444f-afb9-ff7ed13996ef",
+              "name": "message",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "audioTranscrito1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        528,
+        -64
+      ],
+      "notesInFlow": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "844268f9-a6ce-4824-a1e4-b6aa652c6374",
+              "name": "unificaMessage",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        832,
+        96
+      ],
+      "name": "unificaMessage"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data.base64",
+        "options": {
+          "mimeType": "audio/mpeg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        -64
+      ],
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "{{WORKFLOW_BUFFER_ID}}",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/{{WORKFLOW_BUFFER_ID}}",
+          "cachedResultName": "generic-buffer"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $json.unificaMessage }}",
+            "phoneNumber": "={{ $('variaveisWebhook').item.json.Telefone }}",
+            "delayTimeMs": "140000"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "phoneNumber",
+              "displayName": "phoneNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "delayTimeMs",
+              "displayName": "delayTimeMs",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1056,
+        96
+      ],
+      "name": "Buffering"
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1072,
+        352
+      ],
+      "name": "Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "{{CREDENTIAL_GOOGLE_GEMINI_ID}}",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "{{WORKFLOW_GENERIC_TEXT_ID}}",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/{{WORKFLOW_GENERIC_TEXT_ID}}",
+          "cachedResultName": "generic-text"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "phoneNumber": "={{ $('variaveisWebhook').item.json.Telefone }}",
+            "Instance_id": "={{ $('variaveisWebhook').item.json.instanceId }}",
+            "message": "={{ $json.output }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "phoneNumber",
+              "displayName": "phoneNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "Instance_id",
+              "displayName": "Instance_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1648,
+        96
+      ],
+      "name": "Mensagem em texto"
+    },
+    {
+      "parameters": {
+        "resource": "chat-api",
+        "operation": "get-media-base64",
+        "instanceName": "={{ $json.InstanceId }}",
+        "messageId": "={{ $('Webhook').item.json.body.data.key.id }}"
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -64
+      ],
+      "name": "get base64",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "atendimentos_vanessa",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1936,
+        96
+      ],
+      "webhookId": "{{WEBHOOK_ID}}"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c6d219c2-6a5a-4189-ae38-915e61af2293",
+              "name": "message",
+              "value": "=análise da imagem encaminhada: {{ $json.content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        528,
+        256
+      ],
+      "name": "messageGemini"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash"
+        },
+        "text": "=<?xml version=\"1.0\" encoding=\"UTF-8\"?> <prompt_analise_conteudo>     <introducao>         <descricao>             O conteúdo que você vai receber pode ser três tipos de coisas diferentes: uma imagem, um video ou um documento, independente da extensão do arquivo.         </descricao>     </introducao>      <classificacao>         <regra>             Para cada caso você deve identificar em qual caso o item se encaixa da melhor maneira e responder conforme as ordens para cada respectivo tipo de classificação.         </regra>     </classificacao>      <tipos_conteudo>         <imagem>             <acao>                 Leia, entenda o que se passa na imagem e descreva brevemente o conteúdo dela.             </acao>         </imagem>          <video>             <acao>                 Observe e entenda o contexto dele, feito isso, explique sobre o que o video fala brevemente.             </acao>         </video>          <documento>             <acao>                 Leia todo o conteúdo e fale sobre o que se trata em detalhes.             </acao>         </documento>     </tipos_conteudo>      <ordens_obrigatorias>         <titulo>Ordens que devem ser seguidas a todo custo:</titulo>         <regra_1>Não use caracteres especiais</regra_1>         <regra_2>Não use jargões ou gírias</regra_2>         <regra_3>Seja detalhista</regra_3>         <regra_4>Seja breve e direto</regra_4>     </ordens_obrigatorias>      <formatacao_resposta>         <instrucao>             No inicio da sua mensagem, coloque exatamente: MENSAGEM DE ANALISE         </instrucao>     </formatacao_resposta> </prompt_analise_conteudo>",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        304,
+        256
+      ],
+      "name": "Analyze image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "{{CREDENTIAL_GOOGLE_GEMINI_ID}}",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ $('variaveisWebhook').item.json.Telefone }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1392,
+        -144
+      ],
+      "name": "Delete",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "redis": {
+          "id": "{{CREDENTIAL_REDIS_ID}}",
+          "name": "Redis"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "33dd4fc0-904b-4977-bb9e-0345297d4cca",
+              "leftValue": "={{ $('Webhook').item.json.body.data.message.conversation }}",
+              "rightValue": "#sair",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "54142b29-e06d-4837-a3da-9bd01d4d2be1",
+              "leftValue": "={{ $('Webhook').item.json.body.data.message.conversation }}",
+              "rightValue": "#SAIR",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1568,
+        96
+      ],
+      "name": "#sair",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('variaveisWebhook').item.json.instanceId }}",
+        "remoteJid": "={{ $('variaveisWebhook').item.json.Telefone }}",
+        "messageText": "Historico apagado com sucesso.",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        -144
+      ],
+      "name": "Enviar texto1",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "42f780d8-89e8-4553-8cea-d87dbf85802f",
+              "name": "instanceId",
+              "value": "={{ $json.body.instance }}",
+              "type": "string"
+            },
+            {
+              "id": "3ad0386d-8645-4292-8d08-410e6665a85b",
+              "name": "Telefone",
+              "value": "={{\n  $json.body?.conversation?.contact_inbox?.contact_id ||\n  (\n    $json.body?.data?.key?.remoteJid?.includes('@s.whatsapp.net')\n      ? $json.body?.data?.key?.remoteJid.split('@')[0]\n      : $json.body?.data?.key?.remoteJidAlt?.includes('@s.whatsapp.net')\n        ? $json.body?.data?.key?.remoteJidAlt.split('@')[0]\n        : null\n  )\n}}",
+              "type": "string"
+            },
+            {
+              "id": "e811271d-6033-4b4a-ba5f-abf606fb9d12",
+              "name": "message",
+              "value": "={{ $json.body.data.message.conversation }}",
+              "type": "string"
+            },
+            {
+              "id": "07c01d80-089b-408f-9104-52ae6615874e",
+              "name": "nome",
+              "value": "={{ $json.body.data.pushName }}",
+              "type": "string"
+            },
+            {
+              "id": "63747143-b828-4f30-8765-bae055d9afcd",
+              "name": "type",
+              "value": "={{ $json.body.data.messageType }}",
+              "type": "string"
+            },
+            {
+              "id": "d0dd68b6-e826-4325-bead-e1f6aa9dda89",
+              "name": "instanceId",
+              "value": "={{ $json.body.instance }}",
+              "type": "string"
+            },
+            {
+              "id": "168a7927-5fb1-4da5-8e9c-1bab7266d36b",
+              "name": "imageUrl",
+              "value": "={{ $json.body.data.message.imageMessage.url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1744,
+        96
+      ],
+      "name": "variaveisWebhook",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "101c3ff7-e997-43bb-8e99-fe82746c5993",
+                    "leftValue": "={{ $('variaveisWebhook').item.json.type }}",
+                    "rightValue": "audioMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "38226af4-80fe-4155-9ceb-2379f44e29ed",
+                    "leftValue": "={{ $('variaveisWebhook').item.json.type }}",
+                    "rightValue": "conversation",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "1a4aae82-9d4c-4baa-8c14-14993bb2e88f",
+                    "leftValue": "={{ $('variaveisWebhook').item.json.type }}",
+                    "rightValue": "=imageMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "image"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "verificaTipoMensagem1",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -416,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c6d219c2-6a5a-4189-ae38-915e61af2293",
+              "name": "message",
+              "value": "={{ $('variaveisWebhook').item.json.message}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        176,
+        96
+      ],
+      "name": "messageText1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dab933f3-ea6e-4518-a8f2-0b0831d1bde4",
+              "leftValue": "={{ $('variaveisWebhook').item.json.Telefone }}",
+              "rightValue": "{{ALLOWED_PHONE_1}}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "13a91811-696e-4e6e-99aa-ab23027fec3c",
+              "leftValue": "={{ $('variaveisWebhook').item.json.Telefone }}",
+              "rightValue": "{{ALLOWED_PHONE_2}}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1392,
+        96
+      ],
+      "name": "filtro"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('variaveisWebhook').item.json.Telefone }}",
+        "contextWindowLength": 100
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        1184,
+        352
+      ],
+      "name": "memory",
+      "credentials": {
+        "redis": {
+          "id": "{{CREDENTIAL_REDIS_ID}}",
+          "name": "Redis"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "chat-api",
+        "operation": "get-media-base64",
+        "instanceName": "={{ $('variaveisWebhook').item.json.instanceId }}",
+        "messageId": "={{ $('Webhook').item.json.body.data.key.id }}"
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        256
+      ],
+      "name": "get base",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data.base64",
+        "options": {
+          "mimeType": "image/jpeg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        256
+      ],
+      "name": "Convert to File1"
+    },
+    {
+      "parameters": {
+        "authentication": "nocoDbApiToken",
+        "operation": "getAll",
+        "projectId": "{{NOCODB_PROJECT_ID}}",
+        "table": "{{NOCODB_TABLE_CLIENTES_ID}}",
+        "returnAll": true,
+        "options": {
+          "where": "=(telefone,eq,{{ $('variaveisWebhook').item.json.Telefone }})"
+        }
+      },
+      "type": "n8n-nodes-base.nocoDb",
+      "typeVersion": 3,
+      "position": [
+        -1200,
+        96
+      ],
+      "name": "clientes",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "{{CREDENTIAL_NOCODB_ID}}",
+          "name": "NocoDB API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "58a139e8-3e85-4c99-8693-4fa4b5247435",
+              "name": "telefone",
+              "value": "={{ $json.telefone }}",
+              "type": "string"
+            },
+            {
+              "id": "afdc935a-5f17-41a2-9ae6-f0127b55aa5f",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -992,
+        96
+      ],
+      "name": "dados"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "false",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "04266bcf-b823-4bb0-b10d-5a8e28ef9da4"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "para"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3633759e-94d3-44d2-8aad-00b6f2e40760",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "true",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "segue"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "cbb0ce12-f409-4239-a3ed-2c0defcb4309",
+                    "leftValue": "={{ $json.telefone }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "empty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "registro"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -784,
+        80
+      ],
+      "name": "Switch"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -592,
+        -80
+      ],
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "authentication": "nocoDbApiToken",
+        "operation": "create",
+        "projectId": "{{NOCODB_PROJECT_ID}}",
+        "table": "{{NOCODB_TABLE_CLIENTES_ID}}",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldName": "nome",
+              "fieldValue": "={{ $('variaveisWebhook').item.json.nome }}"
+            },
+            {
+              "fieldName": "telefone",
+              "fieldValue": "={{ $('variaveisWebhook').item.json.Telefone }}"
+            },
+            {
+              "fieldName": "status",
+              "fieldValue": "true"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.nocoDb",
+      "typeVersion": 3,
+      "position": [
+        -592,
+        208
+      ],
+      "name": "registro",
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "{{CREDENTIAL_NOCODB_ID}}",
+          "name": "NocoDB API Token"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        352
+      ],
+      "name": "calc"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use está tool para ter acesso aos produtos disponíveis",
+        "authentication": "nocoDbApiToken",
+        "operation": "getAll",
+        "projectId": "{{NOCODB_PROJECT_ID}}",
+        "table": "{{NOCODB_TABLE_CARDAPIO_ID}}",
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.nocoDbTool",
+      "typeVersion": 3,
+      "position": [
+        1504,
+        352
+      ],
+      "name": "cardapio",
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "{{CREDENTIAL_NOCODB_ID}}",
+          "name": "NocoDB API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Relatório').item.json.output }}",
+                    "rightValue": "entraremos em contato o quanto antes para finalização",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "009b35c2-398a-4d0e-88c9-7e9a9e88478a"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "segue"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1856,
+        96
+      ],
+      "name": "encaminhaGrupo"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e9974e03-21c4-45bf-813c-30dbc22ed05b",
+              "name": "var_assistant",
+              "value": "={{ $json.output.match(/\\{[\\s\\S]*\\}/)?.[0] || null }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2400,
+        96
+      ],
+      "name": "relatorio"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('variaveisWebhook').item.json.instanceId }}",
+        "remoteJid": "={{WHATSAPP_GROUP_JID}}",
+        "messageText": "=*🎉Novo pedido feito❗*\n*Feito em {{ $now.toFormat(\"dd/MM/yyyy 'às' HH:mm\") }}*\n\n👤*Cliente:* {{ $('variaveisWebhook').item.json.nome }}\n📞*Telefone:* {{ $('variaveisWebhook').item.json.Telefone }}\n*Data de preferência do cliente:* {{ $json.var_assistant['data de preferência'] }}\n*Itens pedidos:* {{ $json.var_assistant['itens pedidos'] }}\n💵*Valor:* {{ $json.var_assistant['valor calculado'] }}\n🏡*Endereço de entrega:* {{ $json.var_assistant['endereço de entrega'] }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2576,
+        96
+      ],
+      "name": "Enviar para grupo",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('variaveisWebhook').item.json.Telefone }}",
+        "contextWindowLength": 100
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        2096,
+        352
+      ],
+      "name": "Memory 2",
+      "credentials": {
+        "redis": {
+          "id": "{{CREDENTIAL_REDIS_ID}}",
+          "name": "Redis"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        352
+      ],
+      "name": "Gemini 2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "{{CREDENTIAL_GOOGLE_GEMINI_ID}}",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Use está tool para encaminhar o cardápio de natal para o cliente",
+        "workflowId": {
+          "__rl": true,
+          "value": "{{WORKFLOW_ENVIA_CARDAPIO_ID}}",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/{{WORKFLOW_ENVIA_CARDAPIO_ID}}",
+          "cachedResultName": "envia_cardapio"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "instance": "={{ $('variaveisWebhook').item.json.instanceId }}",
+            "telefone": "={{ $('variaveisWebhook').item.json.Telefone }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "instance",
+              "displayName": "instance",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "telefone",
+              "displayName": "telefone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1616,
+        352
+      ],
+      "name": "envia_cardapio"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use está tool para obter todos os produtos especiais do período de natal",
+        "authentication": "nocoDbApiToken",
+        "operation": "getAll",
+        "projectId": "{{NOCODB_PROJECT_ID}}",
+        "table": "{{NOCODB_TABLE_CARDAPIO_NATAL_ID}}",
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.nocoDbTool",
+      "typeVersion": 3,
+      "position": [
+        1744,
+        352
+      ],
+      "name": "cardapio_natal",
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "{{CREDENTIAL_NOCODB_ID}}",
+          "name": "NocoDB API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=<post_processing_registration>\n<instruction> \nCom base na última interação com o usuário, gere um relatório em formato JSON.\n\n**REGRAS:**\n1. Preencha cada campo do JSON com a informação correspondente extraída da conversa.\n2. **NÃO INVENTE INFORMAÇÕES.** Se o dado não existir na conversa, deixe o campo vazio.\n3. Retorne **SOMENTE** o JSON, sem quaisquer marcações de código, textos adicionais ou quebras de linha \\n.\n</instruction> \n4. A data de preferência sempre deve ser no formato dd/mm/yyyy (dia/mês/ano)\n\n<json_template>\n{ \"data de preferência\": \"{data_preferencia}\", \"itens pedidos\": \"{itens_pedidos}\", \"valor calculado\": \"{valor}\" \"endereço de entrega\": \"{endereco_entrega}\" }\n</json_template>\n\n<example>\n<json_output>\n{ \"data de preferência\": \"27/11/2025\", \"itens pedidos\": \"bolo de 20cm, massa de Baunilha, recheio de Nozes e geleia de framboesa\", \"endereço de entrega\": \"Rua barão do rio branco, 42, vila júlia, Poa-SP\" }\n</json_output>\n</example>\n</post_processing_registration>\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        2080,
+        96
+      ],
+      "name": "Relatório"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=contexto temporal: {{ $now.format('FFFF') }}\n\nAqui está o seu System Prompt atualizado com as novas regras de comportamento para o envio do PDF e a limitação de uso da tool.\n\nPrincipais alterações realizadas:\n\nTool envia_cardapio: Adicionada regra de verificação de histórico (enviar apenas 1 vez) e esclarecido que este é o único PDF disponível.\n\nTool cardapio_natal: Alterada para uso reativo (só consultar se o cliente tiver dúvidas específicas), priorizando o envio do PDF.\n\nFluxo 2 (Montagem): Atualizado para refletir a lógica: Natal = PDF Primeiro / Padrão = Lista de Texto.\n\nRegras Críticas: Adicionada a restrição de reenvio da tool e comportamento sobre detalhamento dos itens.\n\nPersona e Objetivo: Você é um assistente virtual de atendimento da poc.atendimentos. Seu objetivo é anotar pedidos de forma eficiente, clara e amigável, coletando informações sobre produtos desejados, data de preferência e endereço de entrega. Você NÃO finaliza pedidos - apenas informa os produtos disponíveis e coleta as informações necessárias. Um colaborador humano entrará em contato posteriormente para finalizar o pedido.\n\nFerramentas Disponíveis (Tools):\n\ncardapio:\n\nFunção: Acessa as informações de produtos PADRÃO disponíveis (nome e preço). Alguns itens não terão preço informado; nesse caso, desconsidere a informação do preço. Uso: Consulte esta tool quando o cliente perguntar sobre o cardápio comum ou itens do dia a dia. Formato dos Dados: A tool retorna os dados já organizados em formato de lista. Você DEVE SEMPRE apresentar esses dados ao cliente EXATAMENTE em formato de lista.\n\ncardapio_natal:\n\nFunção: Acessa a base de dados EXCLUSIVA de produtos e valores de NATAL. Uso: Consulte esta tool APENAS para responder dúvidas pontuais ou detalhar itens quando o cliente perguntar especificamente (ex: \"O que vem no panetone?\", \"Qual o preço do chocotone?\"). NÃO utilize esta tool para listar todos os produtos de uma vez, priorize o envio do PDF.\n\nenvia_cardapio:\n\nFunção: Encaminha um arquivo PDF do cardápio de Natal. Uso: Utilize quando o cliente solicitar o cardápio de Natal ou aceitar a oferta do mesmo. RESTRIÇÃO DE USO: Verifique o histórico da conversa. Esta tool deve ser acionada APENAS UMA VEZ por atendimento. Caso o cliente peça novamente, informe que o arquivo já foi enviado anteriormente na conversa. Acione novamente apenas se o cliente insistir explicitamente alegando não ter recebido. OBS: Este é o ÚNICO cardápio disponível em formato PDF. Não existe PDF para o cardápio padrão.\n\nREGRAS DE FORMATAÇÃO OBRIGATÓRIAS (Para 'cardapio' e 'cardapio_natal' quando for necessário detalhar):\n\nSEMPRE apresente os itens em formato de lista (bulletpoints ou numerada)\n\nNUNCA apresente os itens em formato de parágrafo corrido ou texto contínuo\n\nMantenha cada item em uma linha separada\n\nPreserve a organização e categorização fornecida pela tool\n\nPara itens com preço: apresente no formato \"• Nome do item - R$ XX,XX\"\n\nPara itens sem preço: apresente no formato \"• Nome do item\" (sem mencionar preço)\n\ncalc:\n\nFunção: Soma os valores dos itens selecionados. Uso Obrigatório: Sempre utilize esta tool para calcular o valor total do pedido antes de informá-lo ao cliente. Não faça cálculos manualmente.\n\nInformações da Campanha de Natal (Contexto e Regras):\n\nUtilize estas informações para responder dúvidas específicas sobre encomendas de Natal:\n\nPrazos de Encomenda: Aceitamos encomendas até o dia 16/12 ou até atingirmos o limite de produção.\n\nData das Entregas de Natal: Serão realizadas EXCLUSIVAMENTE no dia 23/12/25. Não é possível agendar horário específico (rota definida pela disponibilidade).\n\nPagamento: Pedidos considerados somente após envio do comprovante pelo WhatsApp.\n\nPIX: Solicitar chave.\n\nCartão de Crédito: Enviamos link via WhatsApp (com opções de juros da operadora).\n\nLogística de Entrega/Retirada:\n\nEntrega: Consultar valor da taxa no ato.\n\nRetirada: Disponível no Ateliê (localizado na Penha).\n\nUber Flash: A solicitação deve ser realizada pelo CLIENTE. O cliente nos informa e colocamos o pedido no carro.\n\nValidade e Armazenamento: Produtos artesanais sem conservantes (validade de até 7 dias).\n\nItens que exigem refrigeração: Bolos, sobremesas, pudins, rabanadas e cupcakes.\n\nFluxo de Atendimento Obrigatório:\n\nSaudação e Oferta Inicial:\n\nAtive a tool 'opcoesTamanho' Inicie a conversa saudando o cliente de forma calorosa e acolhedora. IMEDIATAMENTE após a saudação, informe sobre o período especial: \"Gostaria de avisar que já estamos com nosso período de encomendas de Natal aberto! 🎄\" Pergunte: \"Você gostaria que eu te enviasse o PDF do nosso cardápio especial de Natal ou prefere ver o cardápio tradicional?\"\n\nMontagem do Pedido:\n\nIdentifique a intenção do cliente para escolher a ação correta:\n\nSe o cliente quiser o cardápio de NATAL:\n\nAcione a tool envia_cardapio (Respeitando a regra de envio único).\n\nPergunte: \"Deseja encomendar algo do cardápio ou tem alguma dúvida sobre os itens?\"\n\nSOMENTE se o cliente tiver dúvidas sobre ingredientes ou valores específicos, consulte a tool cardapio_natal e responda pontualmente. NÃO liste todos os itens por texto, pois já estão no PDF.\n\nSe o cliente quiser o cardápio PADRÃO:\n\nUse a tool cardapio.\n\nApresente os dados em formato de lista no chat (pois não existe PDF deste cardápio).\n\nConforme o cliente seleciona os itens, confirme o nome do item e o preço. Continue o processo até que o cliente indique claramente que finalizou (ex: \"É só isso\", \"Finalizei\").\n\nInformação de Valores:\n\nUse a tool calc para somar todos os itens selecionados. IMPORTANTE: Informe o valor total SEMPRE como \"a partir de R$[Valor Total]\" (ex: \"Seu pedido ficará a partir de R$150,00\"). Explique que este é um valor estimado e que o valor final será confirmado pelo colaborador que entrará em contato.\n\nColeta de Data de Preferência (ETAPA OBRIGATÓRIA - NÃO PULE):\n\nATENÇÃO: Esta é uma etapa SEPARADA da coleta de endereço. Após informar o valor estimado, você DEVE coletar PRIMEIRO a data de preferência. Pergunte: \"Para qual data você gostaria de receber o pedido?\" Informe IMEDIATAMENTE as regras de entrega (segunda a sábado, refrigerado, sem entregas domingo). Valide a data (deve ser futura). EXCEÇÃO NATAL: Se o pedido for de Natal, relembre que a entrega é fixa no dia 23/12/25. Após coletar a data válida, informe OBRIGATORIAMENTE: \"Certo, coletei sua data de preferência. A data real de preparação e entrega será combinada com nosso colaborador posteriormente.\"\n\nColeta de Endereço (ETAPA OBRIGATÓRIA - NÃO PULE):\n\nSomente APÓS ter coletado a data, peça o endereço. Pergunte: \"Agora preciso do endereço completo para entrega. Para qual endereço você gostaria de receber os produtos?\" OPÇÃO DE RETIRADA: Se o cliente preferir, informe que pode retirar no Ateliê na Penha ou solicitar um Uber Flash (por conta do cliente). Colete: Rua, Número, Bairro, Complemento e Cidade. Informe: \"O valor do frete será informado pelo nosso colaborador que entrará em contato posteriormente.\"\n\nConfirmação Final:\n\nSOMENTE após ter: Pedido completo + Valor estimado + Data + Endereço. Encerre a interação EXATAMENTE com: \"Agradecemos pela sua preferência, entraremos em contato o quanto antes para finalização.\"\n\nRegras Críticas:\n\nENVIO DE PDF: O PDF de Natal deve ser enviado APENAS UMA VEZ. Se o cliente pedir de novo, avise que já enviou. Só envie novamente sob insistência.\n\nCARDÁPIO DE NATAL EM TEXTO: Não liste os itens de Natal no chat espontaneamente. Envie o PDF. Só use o texto da tool cardapio_natal para responder perguntas específicas do cliente.\n\nÚNICO PDF: Deixe claro que só existe PDF para o Natal. O cardápio padrão é sempre em lista no chat.\n\nOFERTA DE NATAL: É obrigatório mencionar o cardápio de Natal na primeira interação (Fluxo 1).\n\nSEMPRE informe valores como \"a partir de R$X\".\n\nNUNCA finalize o pedido ou confirme valores finais fechados.\n\nA coleta de data e endereço são DUAS ETAPAS SEPARADAS.\n\nSempre informe que as entregas são de segunda a sábado (sem entregas aos domingos). Para Natal, a data fixa é 23/12.\n\nNUNCA invente informações. Use apenas dados das tools."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1296,
+        96
+      ],
+      "name": "AI Agent"
+    }
+  ],
+  "connections": {
+    "Analyze audio": {
+      "main": [
+        [
+          {
+            "node": "audioTranscrito1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "audioTranscrito1": {
+      "main": [
+        [
+          {
+            "node": "unificaMessage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "unificaMessage": {
+      "main": [
+        [
+          {
+            "node": "Buffering",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Analyze audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buffering": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get base64": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "variaveisWebhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "messageGemini": {
+      "main": [
+        [
+          {
+            "node": "unificaMessage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "messageGemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "#sair": {
+      "main": [
+        [
+          {
+            "node": "Delete",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "filtro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "variaveisWebhook": {
+      "main": [
+        [
+          {
+            "node": "#sair",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "verificaTipoMensagem1": {
+      "main": [
+        [
+          {
+            "node": "get base64",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "messageText1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "get base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "messageText1": {
+      "main": [
+        [
+          {
+            "node": "unificaMessage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filtro": {
+      "main": [
+        [
+          {
+            "node": "clientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get base": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File1": {
+      "main": [
+        [
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clientes": {
+      "main": [
+        [
+          {
+            "node": "dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dados": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "verificaTipoMensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "registro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "registro": {
+      "main": [
+        [
+          {
+            "node": "verificaTipoMensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "calc": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cardapio": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mensagem em texto": {
+      "main": [
+        [
+          {
+            "node": "encaminhaGrupo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "encaminhaGrupo": {
+      "main": [
+        [
+          {
+            "node": "Relatório",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "relatorio": {
+      "main": [
+        [
+          {
+            "node": "Enviar para grupo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memory 2": {
+      "ai_memory": [
+        [
+          {
+            "node": "Relatório",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini 2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Relatório",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "envia_cardapio": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cardapio_natal": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Relatório": {
+      "main": [
+        [
+          {
+            "node": "relatorio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Mensagem em texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2025-11-26T20:38:22.651Z",
+      "createdAt": "2025-11-26T20:38:22.651Z",
+      "id": "p3YwGmFbWMhNFB6N",
+      "name": "p-vanessa"
+    }
+  ]
+}

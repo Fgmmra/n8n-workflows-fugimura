@@ -1,0 +1,183 @@
+{
+  "name": "envia_cardapio",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2b028bb9-de07-4197-98bc-d69adc91f065",
+              "name": "telefoneCliente",
+              "value": "={{ $json.telefone }}",
+              "type": "string"
+            },
+            {
+              "id": "755d531a-1b7a-4b97-8922-0d195a23ee32",
+              "name": "InstanceId",
+              "value": "={{ $json.instance }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Formalizar",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        656,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "817f12c4-7d2a-45bd-8c12-74ab0c196308",
+              "name": "response",
+              "value": "=O cardápio de natal já foi enviado! Pergunte agora, somente o pedido que o cliente deseja fazer.\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Resposta para o Agente",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1328,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "instance"
+            },
+            {
+              "name": "telefone"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        432,
+        48
+      ],
+      "name": "Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "{{SUPABASE_TABLE_ENVIA_CARDAPIO}}",
+        "returnAll": true,
+        "filterType": "none"
+      },
+      "name": "GetCardapio",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        880,
+        48
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "{{CREDENTIAL_SUPABASE_ID}}",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "operation": "send-document",
+        "instanceName": "={{ $('Formalizar').item.json.InstanceId }}",
+        "remoteJid": "={{ $('Formalizar').item.json.telefoneCliente }}",
+        "media": "={{ $json.url }}",
+        "caption": "Aqui está nosso cardápio de natal",
+        "fileName": "CardapioDeNatal.pdf",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        48
+      ],
+      "name": "Evolution API1",
+      "credentials": {
+        "evolutionApi": {
+          "id": "{{CREDENTIAL_EVOLUTION_API_ID}}",
+          "name": "Evolution API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Formalizar": {
+      "main": [
+        [
+          {
+            "node": "GetCardapio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger": {
+      "main": [
+        [
+          {
+            "node": "Formalizar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetCardapio": {
+      "main": [
+        [
+          {
+            "node": "Evolution API1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution API1": {
+      "main": [
+        [
+          {
+            "node": "Resposta para o Agente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2025-11-26T20:38:22.651Z",
+      "createdAt": "2025-11-26T20:38:22.651Z",
+      "id": "p3YwGmFbWMhNFB6N",
+      "name": "p-vanessa"
+    }
+  ]
+}
